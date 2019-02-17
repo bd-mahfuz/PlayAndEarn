@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">Play And Earn</string>
+    <string name="admob_app_id">ca-app-pub-6743725542896610~1007422547</string>
+    <string name="code_sent_info">We sent you a code. It will be detected automatically but if it is not detected you can put it bellow manually as well.</string>
+    <string name="submit">Submit</string>
+    <string name="verification_coce">Enter verification code</string>
+
+    <string name="user_name_text">User name</string>
+    <string name="dummy_user">Tarek Hasan</string>
+    <string name="edit">Edit</string>
+    <string name="dummy_phone">02348034</string>
+    <string name="dummy_email">test@gmail.com</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="email">Email</string>
+    <string name="update">Update</string>
+    <string name="dob">Date of Birth</string>
+    <string name="dummy_dob">12/12/12</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="select_gender">Select Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="others">Others</string>
+    <string name="upload_photo">Upload Photo</string>
+    <string name="upload">Upload</string>
+    <string name="continue_text">Continue</string>
+    <string name="play_and_earn">Play And Earn</string>
+    <string name="watch_video">Watch Video</string>
+    <string name="affiliate">Affiliate</string>
+    <string name="dummy_question">What is Neural Network?</string>
+    <string name="option_1">Option 1</string>
+    <string name="next">Next</string>
 </resources>

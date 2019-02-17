@@ -1,0 +1,56 @@
+{
+  "project_info": {
+    "project_number": "642051270139",
+    "firebase_url": "https://play-and-earn-9959f.firebaseio.com",
+    "project_id": "play-and-earn-9959f",
+    "storage_bucket": "play-and-earn-9959f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:642051270139:android:7ca7231822f3408f",
+        "android_client_info": {
+          "package_name": "com.kcirqueit.playandearn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "642051270139-eg08p6ko52fgvghqle8ljrkm4ierkauh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kcirqueit.playandearn",
+            "certificate_hash": "6d98fab87a8474e9a28de05d6d4b06866bf51de3"
+          }
+        },
+        {
+          "client_id": "642051270139-v0a68ghm0dh62q7o0q4rnve79hull3qm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmHp4pts6L0GYWGEdD18LL7Nmm024FtbY"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642051270139-v0a68ghm0dh62q7o0q4rnve79hull3qm.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      },
+      "admob_app_id": "ca-app-pub-6743725542896610~1007422547"
+    }
+  ],
+  "configuration_version": "1"
+}
