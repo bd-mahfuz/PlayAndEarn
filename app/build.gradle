@@ -32,6 +32,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.2'
 
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0-beta01'
     annotationProcessor "androidx.lifecycle:lifecycle-compiler:$lifecycle_version"
 
 
@@ -50,6 +51,9 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.theartofdev.edmodo:android-image-cropper:2.4.+'
     implementation 'id.zelory:compressor:2.1.0'
+
+    implementation 'com.daimajia.easing:library:2.0@aar'
+    implementation 'com.daimajia.androidanimations:library:2.3@aar'
 
     implementation 'com.github.joielechong:countrycodepicker:2.2.0'
 

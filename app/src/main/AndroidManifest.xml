@@ -13,12 +13,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".activity.WalletActivity"></activity>
+        <activity android:name=".activity.ProfileActivity" />
 
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="@string/admob_app_id"/>
+            android:value="@string/admob_app_id" />
 
-        <activity android:name=".activity.DashBoardActivity"></activity>
+        <activity android:name=".activity.DashBoardActivity" />
         <activity android:name=".activity.UserInfoActivity" />
         <activity android:name=".activity.VerificationActivity" />
         <activity android:name=".activity.LoginActivity">
@@ -28,15 +30,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activity.MainActivity"
-            android:parentActivityName=".activity.DashBoardActivity"/>
-
+        <activity
+            android:name=".activity.MainActivity"
+            android:parentActivityName=".activity.DashBoardActivity" />
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
-
     </application>
-
-
 
 </manifest>

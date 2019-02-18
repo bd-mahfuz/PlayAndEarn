@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activity.MainActivity">
-
-    <include layout="@layout/app_bar_layout"
-        android:id="@+id/main_toolbar"/>
-
+    tools:context=".fragment.DynamicFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_below="@id/main_toolbar"
-        android:layout_above="@+id/button_layout">
+        android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
@@ -32,7 +27,6 @@
                 >
 
                 <TextView
-                    android:id="@+id/question_title_tv"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -52,7 +46,6 @@
             android:background="@android:color/white">
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/option1_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -84,7 +77,6 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/option2_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -116,7 +108,6 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/option3_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -148,7 +139,6 @@
             </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
-                android:id="@+id/option4_card"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -187,28 +177,4 @@
     </LinearLayout>
 
 
-    <LinearLayout
-        android:id="@+id/button_layout"
-        android:orientation="vertical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/white">
-
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/next_bt"
-            android:layout_width="150dp"
-            android:layout_height="60dp"
-            android:text="@string/next"
-            android:layout_marginTop="10dp"
-            android:backgroundTint="@color/colorPrimaryDark"
-            android:layout_gravity="center_horizontal"
-            android:textColor="@android:color/white"
-            android:layout_marginBottom="10dp"
-            style="@style/Base.Widget.AppCompat.Button.Colored"
-            />
-
-    </LinearLayout>
-
-</RelativeLayout>
+</ScrollView>
