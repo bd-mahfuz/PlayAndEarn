@@ -40,6 +40,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.kcirqueit.playandearn.R;
@@ -64,6 +65,9 @@ public class ProfileActivity extends AppCompatActivity {
 
     @BindView(R.id.edit_photo_iv)
     TextView mEditPhotoId;
+
+    @BindView(R.id.user_name_title_tv)
+    TextView mUserNameTitle;
 
     @BindView(R.id.p_user_name_et)
     EditText mUserNameEt;
@@ -111,6 +115,10 @@ public class ProfileActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mAuth = FirebaseAuth.getInstance();
+        mRootRef = FirebaseDatabase.getInstance().getReference();
+        mUserRef = mRootRef.child("Users");
+        mEarningRef = mRootRef.child("Earnings");
+        rootStorageRef = FirebaseStorage.getInstance().getReference();
 
         mUserViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
@@ -133,9 +141,10 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void onChanged(DataSnapshot dataSnapshot) {
                         if (dataSnapshot != null) {
-
+                            Log.d("data snapshot:", dataSnapshot.getRef()+"");
                             mUser = dataSnapshot.getValue(User.class);
                             mUserNameEt.setText(mUser.getUserName());
+                            mUserNameTitle.setText(mUser.getUserName());
                             mPhoneEt.setText(mUser.getPhoneNumber());
                             mEmailEt.setText(mUser.getEmail());
                             mDobEt.setText(mUser.getDateOfBirth());

@@ -46,7 +46,9 @@ public class UserRepository {
 
     public LiveData<DataSnapshot> getUserById(String userId) {
         mUserRef = mUserRef.child(userId);
-        return new FirebaseQueryLiveData(mUserRef);
+        FirebaseQueryLiveData firebaseQueryLiveData =  new FirebaseQueryLiveData(mUserRef);
+        mUserRef = mRootRef.child("Users");
+        return firebaseQueryLiveData;
     }
 
 
