@@ -1,12 +1,16 @@
 package com.kcirqueit.playandearn.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.ads.AdListener;
@@ -23,6 +27,9 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
     private RewardedVideoAd mRewardedVideoAd;
     private InterstitialAd mInterstitialAd;
 
+    @BindView(R.id.dash_toolbar)
+    Toolbar mToolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,8 +37,12 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
 
         ButterKnife.bind(this);
 
-        MobileAds.initialize(this, getString(R.string.admob_app_id));
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Dashboard");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+
+        MobileAds.initialize(this, getString(R.string.admob_app_id));
 
         mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
@@ -76,6 +87,11 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
         } else {
             Toast.makeText(this, "The RewardedVideoAd wasn't loaded yet.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @OnClick(R.id.wallet_bt)
+    public void onWalletBtClick() {
+        startActivity(new Intent(this, WalletActivity.class));
     }
 
 
@@ -145,4 +161,26 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
     }
 
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.dash_board_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (android.R.id.home == item.getItemId()) {
+            finish();
+        }
+
+        switch (item.getItemId()) {
+            case R.id.profile_menu:
+                Intent profileIntent = new Intent(this, ProfileActivity.class);
+                startActivity(profileIntent);
+                break;
+
+        }
+        return true;
+    }
 }

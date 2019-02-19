@@ -275,13 +275,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.profile_menu:
-                Intent profileIntent = new Intent(this, ProfileActivity.class);
-                startActivity(profileIntent);
-                break;
 
             case R.id.wallet_menu:
-
+                Intent walletIntent = new Intent(this, WalletActivity.class);
+                startActivity(walletIntent);
                 break;
 
         }

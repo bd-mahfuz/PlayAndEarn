@@ -48,6 +48,7 @@ public class UserRepository {
         mUserRef = mUserRef.child(userId);
         FirebaseQueryLiveData firebaseQueryLiveData =  new FirebaseQueryLiveData(mUserRef);
         mUserRef = mRootRef.child("Users");
+
         return firebaseQueryLiveData;
     }
 

@@ -27,6 +27,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.kcirqueit.playandearn.R;
+import com.kcirqueit.playandearn.sharedPreference.MySharedPreference;
 import com.kcirqueit.playandearn.viewModel.UserViewModel;
 
 import java.util.concurrent.TimeUnit;
@@ -48,6 +49,8 @@ public class VerificationActivity extends AppCompatActivity {
 
     private String mCurrentUseId;
 
+    private MySharedPreference sharedPreference;
+
     private UserViewModel mUserViewModel;
 
     @Override
@@ -58,6 +61,7 @@ public class VerificationActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         ButterKnife.bind(this);
+        sharedPreference = MySharedPreference.getInstance(this);
 
         mUserViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
@@ -122,6 +126,8 @@ public class VerificationActivity extends AppCompatActivity {
                                         mainIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                                         mainIntent.putExtra("phoneNumber", mPhoneNumber);
                                         mainIntent.putExtra("country", mCountryName);
+                                        sharedPreference.saveData("phoneNumber", mPhoneNumber);
+                                        sharedPreference.saveData("country", mCountryName);
                                         startActivity(mainIntent);
                                         mProgressDialog.dismiss();
                                         finish();

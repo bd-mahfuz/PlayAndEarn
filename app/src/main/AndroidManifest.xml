@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.WalletActivity"></activity>
+        <activity android:name=".activity.WalletActivity"
+            android:parentActivityName=".activity.DashBoardActivity"></activity>
         <activity android:name=".activity.ProfileActivity" />
 
         <meta-data
@@ -36,6 +37,7 @@
         <activity
             android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />
+
     </application>
 
 </manifest>

@@ -33,4 +33,11 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="change">Change</string>
+    <string name="data_not_found">Data not found</string>
+    <string name="total_earned_points">Total Earned Points</string>
+    <string name="amount">500000</string>
+    <string name="withdraw">Withdraw</string>
+    <string name="my_wallet">My Wallet</string>
+    <string name="transaction_history">Transaction History</string>
+    <string name="bKash">bKash</string>
 </resources>

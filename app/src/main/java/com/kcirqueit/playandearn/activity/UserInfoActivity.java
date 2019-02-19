@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.model.User;
+import com.kcirqueit.playandearn.sharedPreference.MySharedPreference;
 import com.kcirqueit.playandearn.viewModel.UserViewModel;
 import com.theartofdev.edmodo.cropper.CropImage;
 
@@ -94,9 +96,11 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    private MySharedPreference sharedPreference;
 
     private Uri mResultUri;
     private byte[] thumbByte;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,8 +108,16 @@ public class UserInfoActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
+        sharedPreference = MySharedPreference.getInstance(this);
+
         mPhoneNumber = getIntent().getStringExtra("phoneNumber");
         mCountryName = getIntent().getStringExtra("country");
+        if ((mPhoneNumber == null || mPhoneNumber.isEmpty())|| (mCountryName == null || mCountryName.isEmpty())) {
+
+            mPhoneNumber = sharedPreference.getData("phoneNumber");
+            mCountryName = sharedPreference.getData("country");
+
+        }
 
         mUserViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
@@ -125,13 +137,13 @@ public class UserInfoActivity extends AppCompatActivity {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 switch (checkedId) {
-                    case R.id.male_rb :
+                    case R.id.male_rb:
                         mGender = "Male";
                         break;
-                    case R.id.female_rb :
+                    case R.id.female_rb:
                         mGender = "Female";
                         break;
-                    case R.id.others_rb :
+                    case R.id.others_rb:
                         mGender = "Others";
                         break;
                 }
@@ -196,7 +208,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
             //croping the image
             CropImage.activity(imageUri)
-                    .setAspectRatio(1,1)
+                    .setAspectRatio(1, 1)
                     .start(this);
 
 
@@ -231,15 +243,13 @@ public class UserInfoActivity extends AppCompatActivity {
                 }
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 thumbBitMap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-                thumbByte= baos.toByteArray();
+                thumbByte = baos.toByteArray();
                 //-------------------------------------
-
-
 
 
             } else if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
                 Exception error = result.getError();
-                Toast.makeText(this, "Error in user Account:"+error.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Error in user Account:" + error.getMessage(), Toast.LENGTH_SHORT).show();
                 Toast.makeText(this, "Cropping error! Please contact with developer.", Toast.LENGTH_SHORT).show();
             }
         }
@@ -264,7 +274,7 @@ public class UserInfoActivity extends AppCompatActivity {
         } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             mEmailEt.setError("Email is not valid");
             return;
-        } else if (dob.isEmpty()){
+        } else if (dob.isEmpty()) {
             mDobEt.setError("Email is not valid");
             return;
         }
@@ -276,14 +286,12 @@ public class UserInfoActivity extends AppCompatActivity {
         mProgressDialog.show();
 
 
-
-
         //for main image
         final StorageReference filePathRef = rootStorageRef.child("user_profile_images")
-                .child(mAuth.getCurrentUser().getUid()+ ".jpg");
+                .child(mAuth.getCurrentUser().getUid() + ".jpg");
         //for thumb image
         final StorageReference thumbFilePathRef = rootStorageRef.child("user_profile_images")
-                .child("thumb_images").child(mAuth.getCurrentUser().getUid()+".jpg");
+                .child("thumb_images").child(mAuth.getCurrentUser().getUid() + ".jpg");
 
         if (mResultUri == null) {
             //mResultUri = Uri.parse("android.resource://com.kcirqueit.spinandearn/drawable/user_avater");
@@ -294,7 +302,7 @@ public class UserInfoActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task task) {
                     if (task.isSuccessful()) {
                         Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
-
+                        sharedPreference.saveData("profileCreated", "true");
                         // go to the main activity
                         startActivity(new Intent(UserInfoActivity.this, DashBoardActivity.class));
                         finish();
@@ -317,7 +325,6 @@ public class UserInfoActivity extends AppCompatActivity {
                             //final String userImageUrl = filePathRef.getDownloadUrl().;
 
 
-
                             UploadTask uploadTask = thumbFilePathRef.putBytes(thumbByte);
                             uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                 @Override
@@ -335,7 +342,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                                     public void onComplete(@NonNull Task task) {
                                                         if (task.isSuccessful()) {
                                                             Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
-
+                                                            sharedPreference.saveData("profileCreated", "true");
                                                             // go to the main activity
                                                             startActivity(new Intent(UserInfoActivity.this, DashBoardActivity.class));
                                                             finish();
@@ -367,23 +374,22 @@ public class UserInfoActivity extends AppCompatActivity {
                                                 }
                                             });*/
 
-                                    }else {
+                                    } else {
                                         mProgressDialog.dismiss();
-                                        Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer." , Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer.", Toast.LENGTH_SHORT).show();
 
                                     }
                                 }
                             });
 
 
-                        }catch (Exception e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                             Toast.makeText(UserInfoActivity.this, "No Image Found to Upload!", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                    else {
+                    } else {
                         mProgressDialog.dismiss();
-                        Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer." , Toast.LENGTH_SHORT).show();
+                        Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer.", Toast.LENGTH_SHORT).show();
 
                     }
                 }
@@ -391,7 +397,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
 
         }
-
 
 
     }

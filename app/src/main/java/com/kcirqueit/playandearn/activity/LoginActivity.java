@@ -16,6 +16,7 @@ import android.widget.EditText;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.kcirqueit.playandearn.R;
+import com.kcirqueit.playandearn.sharedPreference.MySharedPreference;
 import com.rilixtech.CountryCodePicker;
 
 public class LoginActivity extends AppCompatActivity {
@@ -36,14 +37,26 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.ccp)
     CountryCodePicker mCountryCodePicker;
 
+    private MySharedPreference sharedPreference;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mAuth = FirebaseAuth.getInstance();
 
+        sharedPreference = MySharedPreference.getInstance(this);
+
         if (mAuth.getCurrentUser() != null) {
-            startActivity(new Intent(this, DashBoardActivity.class));
+            String profileCreated = sharedPreference.getData("profileCreated");
+            if (profileCreated.equals("true")) {
+                startActivity(new Intent(this, DashBoardActivity.class));
+                finish();
+            } else {
+                startActivity(new Intent(this, UserInfoActivity.class));
+                finish();
+            }
+
         }
 
         setContentView(R.layout.activity_login);

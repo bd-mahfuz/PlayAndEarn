@@ -61,7 +61,7 @@ public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = "ProfileActivity";
 
     @BindView(R.id.p_user_iv)
-    ImageView mUserIv;
+    CircleImageView mUserIv;
 
     @BindView(R.id.edit_photo_iv)
     TextView mEditPhotoId;
