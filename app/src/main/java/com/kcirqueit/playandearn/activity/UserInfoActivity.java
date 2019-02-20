@@ -304,7 +304,7 @@ public class UserInfoActivity extends AppCompatActivity {
                         Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
                         sharedPreference.saveData("profileCreated", "true");
                         // go to the main activity
-                        startActivity(new Intent(UserInfoActivity.this, DashBoardActivity.class));
+                        startActivity(new Intent(UserInfoActivity.this, DashBoard2.class));
                         finish();
 
                         mProgressDialog.dismiss();
@@ -344,7 +344,7 @@ public class UserInfoActivity extends AppCompatActivity {
                                                             Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
                                                             sharedPreference.saveData("profileCreated", "true");
                                                             // go to the main activity
-                                                            startActivity(new Intent(UserInfoActivity.this, DashBoardActivity.class));
+                                                            startActivity(new Intent(UserInfoActivity.this, DashBoard2.class));
                                                             finish();
 
                                                             mProgressDialog.dismiss();

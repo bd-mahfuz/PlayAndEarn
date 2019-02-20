@@ -2,7 +2,9 @@ package com.kcirqueit.playandearn.viewModel;
 
 import android.app.Application;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
+import com.kcirqueit.playandearn.model.Quiz;
 import com.kcirqueit.playandearn.repository.QuizRepository;
 
 import androidx.annotation.NonNull;
@@ -20,6 +22,10 @@ public class QuizViewModel extends AndroidViewModel {
 
     public LiveData<DataSnapshot> getAllQuiz() {
         return quizRepository.getAllQuiz();
+    }
+
+    public Task addQuiz(Quiz quiz) {
+        return quizRepository.addQuiz(quiz);
     }
 
 }

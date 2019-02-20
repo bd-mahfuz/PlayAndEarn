@@ -80,10 +80,10 @@ public class MainActivity extends AppCompatActivity {
     CardView mOption4Card;
 
 
-    private Quiz currentQuiz;
-    private int quizCount = 1;
-
-    private List<Quiz> quizList = new ArrayList<>();
+//    private Quiz currentQuiz;
+//    private int quizCount = 1;
+//
+//    private List<Quiz> quizList = new ArrayList<>();
 
     private QuizViewModel mQuizViewModel;
 
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        mQuizViewModel.getAllQuiz().observe(this, new Observer<DataSnapshot>() {
+       /* mQuizViewModel.getAllQuiz().observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(DataSnapshot dataSnapshot) {
                 quizList.clear();
@@ -128,11 +128,11 @@ public class MainActivity extends AppCompatActivity {
                     progressDialog.dismiss();
                 }
             }
-        });
+        });*/
 
     }
 
-    @OnClick(R.id.next_bt)
+    /*@OnClick(R.id.next_bt)
     public void onNextClick() {
         setFirstQuiz(quizList.get(quizCount));
         quizCount++;
@@ -148,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
         mOption2Tv.setText(quiz.getOptions().get(1));
         mOption3Tv.setText(quiz.getOptions().get(2));
         mOption4Tv.setText(quiz.getOptions().get(3));
-    }
+    }*/
 
     @OnClick(R.id.option1_card)
     public void onOption1Click() {
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public boolean isCorrect(String selectedAns) {
-        if (currentQuiz.getCorrectAns().equals(selectedAns)) {
+        if (/*currentQuiz.getCorrectAns()*/"".equals(selectedAns)) {
             return true;
         }
         return false;

@@ -6,20 +6,25 @@ import java.util.List;
 public class Quiz implements Serializable {
 
     private String id;
-    private String questionTitle;
-    private String correctAns;
-    private List<String> options;
+    private String userId;
+    private String quizName;
+    private String timeLimit;
+    private String cat_id;
+    private int totalMarks;
+    private int totalQuestion;
 
     public Quiz() {
     }
 
-    public Quiz(String id, String questionTitle, String correctAns, List<String> options) {
-        this.id = id;
-        this.questionTitle = questionTitle;
-        this.correctAns = correctAns;
-        this.options = options;
+    public Quiz(String userId, String quizName, String cat_id, int totalMarks, int totalQuestion,
+                String timeLimit) {
+        this.userId = userId;
+        this.quizName = quizName;
+        this.cat_id = cat_id;
+        this.totalMarks = totalMarks;
+        this.totalQuestion = totalQuestion;
+        this.timeLimit = timeLimit;
     }
-
 
     public String getId() {
         return id;
@@ -29,27 +34,51 @@ public class Quiz implements Serializable {
         this.id = id;
     }
 
-    public String getQuestionTitle() {
-        return questionTitle;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setQuestionTitle(String questionTitle) {
-        this.questionTitle = questionTitle;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getCorrectAns() {
-        return correctAns;
+    public String getQuizName() {
+        return quizName;
     }
 
-    public void setCorrectAns(String correctAns) {
-        this.correctAns = correctAns;
+    public void setQuizName(String quizName) {
+        this.quizName = quizName;
     }
 
-    public List<String> getOptions() {
-        return options;
+    public String getCat_id() {
+        return cat_id;
     }
 
-    public void setOptions(List<String> options) {
-        this.options = options;
+    public void setCat_id(String cat_id) {
+        this.cat_id = cat_id;
+    }
+
+    public int getTotalMarks() {
+        return totalMarks;
+    }
+
+    public void setTotalMarks(int totalMarks) {
+        this.totalMarks = totalMarks;
+    }
+
+    public int getTotalQuestion() {
+        return totalQuestion;
+    }
+
+    public void setTotalQuestion(int totalQuestion) {
+        this.totalQuestion = totalQuestion;
+    }
+
+    public String getTimeLimit() {
+        return timeLimit;
+    }
+
+    public void setTimeLimit(String timeLimit) {
+        this.timeLimit = timeLimit;
     }
 }

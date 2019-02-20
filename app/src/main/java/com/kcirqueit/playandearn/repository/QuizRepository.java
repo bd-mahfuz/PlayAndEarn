@@ -1,5 +1,6 @@
 package com.kcirqueit.playandearn.repository;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,6 +35,11 @@ public class QuizRepository {
 
     public LiveData<DataSnapshot> getAllQuiz() {
         return firebaseQueryLiveData;
+    }
+
+    public Task addQuiz(Quiz quiz) {
+        String key = mQuizRef.push().getKey();
+        return mQuizRef.child(key).setValue(quiz);
     }
 
 }

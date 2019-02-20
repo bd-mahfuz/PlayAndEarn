@@ -50,7 +50,7 @@ public class LoginActivity extends AppCompatActivity {
         if (mAuth.getCurrentUser() != null) {
             String profileCreated = sharedPreference.getData("profileCreated");
             if (profileCreated.equals("true")) {
-                startActivity(new Intent(this, DashBoardActivity.class));
+                startActivity(new Intent(this, DashBoard2.class));
                 finish();
             } else {
                 startActivity(new Intent(this, UserInfoActivity.class));

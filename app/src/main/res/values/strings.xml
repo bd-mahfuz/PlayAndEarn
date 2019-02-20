@@ -40,4 +40,22 @@
     <string name="my_wallet">My Wallet</string>
     <string name="transaction_history">Transaction History</string>
     <string name="bKash">bKash</string>
+    <string name="achievment">My Achievement</string>
+    <string name="my_quizzes">My Quizzes</string>
+    <string name="publish_quiz">Publish Quiz</string>
+    <string name="create_quiz">Create Quiz</string>
+    <string name="bookmark_quiz">BookMark</string>
+    <string name="results">Results</string>
+    <string name="all_quizzes">All Quizzes</string>
+    <string name="no_quiz_data_found">No Quiz Data Found</string>
+    <string name="quiz_name">Quiz Name</string>
+    <string name="total_marks">Total Marks</string>
+    <string name="select_category">Select Category</string>
+    <string name="time_limit">Time Limit</string>
+    <string name="total_no_of_question">Total No. of Question</string>
+    <string name="total_questions">Total Questions</string>
+    <string name="create">Create</string>
+    <string name="creator_name">Creator: Karim</string>
+    <string name="time">1:30 hour</string>
+    <string name="start_now">Start Now</string>
 </resources>

@@ -76,8 +76,8 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
     }
 
     @OnClick(R.id.play_quiz_bt)
-    public void onSpinBtClick() {
-        startActivity(new Intent(this, MainActivity.class));
+    public void onPlayClick() {
+        startActivity(new Intent(this, DashBoard2.class));
     }
 
     @OnClick(R.id.video_bt)
