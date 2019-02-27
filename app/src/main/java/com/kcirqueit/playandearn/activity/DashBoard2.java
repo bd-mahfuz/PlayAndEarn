@@ -1,6 +1,7 @@
 package com.kcirqueit.playandearn.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -14,7 +15,6 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -28,8 +28,8 @@ import java.util.List;
 
 public class DashBoard2 extends AppCompatActivity implements SearchView.OnQueryTextListener {
 
-    @BindView(R.id.dash2_toolbar)
-    Toolbar mToolbar;
+    /*@BindView(R.id.dash2_toolbar)
+    Toolbar mToolbar;*/
 
     @BindView(R.id.quiz_rv)
     RecyclerView mQuizRv;
@@ -56,9 +56,9 @@ public class DashBoard2 extends AppCompatActivity implements SearchView.OnQueryT
 
         quizViewModel = ViewModelProviders.of(this).get(QuizViewModel.class);
 
-        setSupportActionBar(mToolbar);
+        /*setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Quiz Dashboard");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);*/
 
         mQuizRv.setLayoutManager(new LinearLayoutManager(this));
 
@@ -80,7 +80,7 @@ public class DashBoard2 extends AppCompatActivity implements SearchView.OnQueryT
         super.onStart();
 
         ProgressDialog progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Loading");
+        progressDialog.setMessage("Loading...");
         progressDialog.show();
 
         quizViewModel.getAllQuiz().observe(this, new Observer<DataSnapshot>() {

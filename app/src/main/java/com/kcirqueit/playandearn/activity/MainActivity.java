@@ -1,45 +1,48 @@
 package com.kcirqueit.playandearn.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatCheckBox;
-import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.viewpager.widget.ViewPager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import android.animation.ValueAnimator;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
-import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.google.firebase.auth.FirebaseAuth;
+import com.dinuscxj.progressbar.CircleProgressBar;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.kcirqueit.playandearn.R;
-import com.kcirqueit.playandearn.adapter.DynamicFragmentAdapter;
-import com.kcirqueit.playandearn.fragment.DynamicFragment;
+import com.kcirqueit.playandearn.model.Participant;
+import com.kcirqueit.playandearn.model.Question;
 import com.kcirqueit.playandearn.model.Quiz;
-import com.kcirqueit.playandearn.viewModel.QuizViewModel;
-import com.rilixtech.CountryCodePicker;
+import com.kcirqueit.playandearn.utility.DateUtility;
+import com.kcirqueit.playandearn.viewModel.ParticipantViewModel;
+import com.kcirqueit.playandearn.viewModel.QuestionViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -79,13 +82,26 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.option4_card)
     CardView mOption4Card;
 
+    private TextView mTextViewCountDown;
 
-//    private Quiz currentQuiz;
-//    private int quizCount = 1;
-//
-//    private List<Quiz> quizList = new ArrayList<>();
+    private CountDownTimer mCountDownTimer;
 
-    private QuizViewModel mQuizViewModel;
+    private long mTimeLeftInMillis;
+    private long mEndTime;
+
+
+    private Question currentQuestion;
+    private int questionCount = 1;
+    private int totalCorrectAns = 0;
+    private int totalAnswered = 0;
+    private boolean isFinished;
+
+    private List<Question> questionList = new ArrayList<>();
+
+    private QuestionViewModel mQuetionViewModel;
+    private ParticipantViewModel mParticipantViewModel;
+    private Quiz quiz;
+    private Participant participant;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,14 +109,55 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        mQuizViewModel = ViewModelProviders.of(this).get(QuizViewModel.class);
+        quiz = (Quiz) getIntent().getSerializableExtra("quiz");
+        participant = (Participant) getIntent().getSerializableExtra("participant");
+
+        mQuetionViewModel = ViewModelProviders.of(this).get(QuestionViewModel.class);
+        mParticipantViewModel = ViewModelProviders.of(this).get(ParticipantViewModel.class);
+
+        mTextViewCountDown = findViewById(R.id.text_view_countdown);
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Play And Earn");
+        getSupportActionBar().setTitle(quiz.getQuizName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
+        long quizTime = Long.parseLong(quiz.getTimeLimit());
+        mTimeLeftInMillis = quizTime;
 
+        startTimer();
+
+    }
+
+
+
+    private void startTimer() {
+        mEndTime = System.currentTimeMillis() + mTimeLeftInMillis;
+
+        mCountDownTimer = new CountDownTimer(mTimeLeftInMillis, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                mTimeLeftInMillis = millisUntilFinished;
+                updateCountDownText();
+            }
+
+            @Override
+            public void onFinish() {
+                updateParticipant();
+                finish();
+            }
+        }.start();
+
+    }
+
+    private void updateCountDownText() {
+
+        int minutes = (int) (mTimeLeftInMillis / 1000) / 60;
+        int seconds = (int) (mTimeLeftInMillis / 1000) % 60;
+
+        String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+
+        mTextViewCountDown.setText(timeLeftFormatted);
     }
 
     @Override
@@ -111,50 +168,52 @@ public class MainActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-       /* mQuizViewModel.getAllQuiz().observe(this, new Observer<DataSnapshot>() {
+        mQuetionViewModel.getAllQuestionsByQuizId(quiz.getId()).observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(DataSnapshot dataSnapshot) {
-                quizList.clear();
                 if (dataSnapshot.getValue() != null) {
-                    for (DataSnapshot quizSnapshot :  dataSnapshot.getChildren()) {
-                        Quiz quiz = quizSnapshot.getValue(Quiz.class);
-                        quizList.add(quiz);
+                    for (DataSnapshot questionSnapshot :  dataSnapshot.getChildren()) {
+                        Question question = questionSnapshot.getValue(Question.class);
+                        questionList.add(question);
                         //Log.d("quiz name:", quiz.getQuestionTitle());
                     }
-                    setFirstQuiz(quizList.get(0));
+                    setQuiz(questionList.get(0));
                     progressDialog.dismiss();
 
                 } else {
                     progressDialog.dismiss();
                 }
             }
-        });*/
+        });
 
     }
 
-    /*@OnClick(R.id.next_bt)
+    @OnClick(R.id.next_bt)
     public void onNextClick() {
-        setFirstQuiz(quizList.get(quizCount));
-        quizCount++;
+        questionCount++;
+        moveToNextQuiz();
         //Toast.makeText(this, "quiz list size:"+quizList.get(0).getCorrectAns(), Toast.LENGTH_SHORT).show();
 
     }
 
 
-    public void setFirstQuiz(Quiz quiz) {
-        this.currentQuiz = quiz;
-        mQTitleTv.setText(quiz.getQuestionTitle());
-        mOption1Tv.setText(quiz.getOptions().get(0));
-        mOption2Tv.setText(quiz.getOptions().get(1));
-        mOption3Tv.setText(quiz.getOptions().get(2));
-        mOption4Tv.setText(quiz.getOptions().get(3));
-    }*/
+    public void setQuiz(Question question) {
+        this.currentQuestion = question;
+        mQTitleTv.setText(questionCount+". "+question.getQuestionTitle());
+        mOption1Tv.setText(question.getOptions().get(0));
+        mOption2Tv.setText(question.getOptions().get(1));
+        mOption3Tv.setText(question.getOptions().get(2));
+        mOption4Tv.setText(question.getOptions().get(3));
+    }
 
     @OnClick(R.id.option1_card)
     public void onOption1Click() {
-        String selectedAnswer = "1";
-
+        totalAnswered ++;
+        
+        int selectedAnswer = 0;
         if (isCorrect(selectedAnswer)) {
+            totalCorrectAns ++;
+
             // change background color green
             mOption1Card.setBackground(ContextCompat.getDrawable(this,
                     R.drawable.rounded_green_transparent));
@@ -172,14 +231,19 @@ public class MainActivity extends AppCompatActivity {
         mOption3Card.setClickable(false);
         mOption4Card.setClickable(false);
         mOption1Card.setClickable(false);
+
+        mNextBt.setEnabled(true);
     }
 
 
     @OnClick(R.id.option2_card)
     public void onOption2Click() {
-        String selectedAnswer = "2";
-
+        totalAnswered ++;
+        
+        int selectedAnswer = 1;
         if (isCorrect(selectedAnswer)) {
+            totalCorrectAns ++;
+
             // change background color green
             mOption2Card.setBackground(ContextCompat.getDrawable(this,
                     R.drawable.rounded_green_transparent));
@@ -198,13 +262,18 @@ public class MainActivity extends AppCompatActivity {
         mOption4Card.setClickable(false);
         mOption1Card.setClickable(false);
 
+        mNextBt.setEnabled(true);
+
     }
 
     @OnClick(R.id.option3_card)
     public void onOption3Click() {
-        String selectedAnswer = "3";
-
+        totalAnswered ++;
+        
+        int selectedAnswer = 2;
         if (isCorrect(selectedAnswer)) {
+            totalCorrectAns ++;
+
             // change background color green
             mOption3Card.setBackground(ContextCompat.getDrawable(this,
                     R.drawable.rounded_green_transparent));
@@ -223,13 +292,18 @@ public class MainActivity extends AppCompatActivity {
         mOption4Card.setClickable(false);
         mOption1Card.setClickable(false);
 
+        mNextBt.setEnabled(true);
+
     }
 
     @OnClick(R.id.option4_card)
     public void onOption4Click() {
-        String selectedAnswer = "4";
-
+        totalAnswered ++;
+        
+        int selectedAnswer = 3;
         if (isCorrect(selectedAnswer)) {
+            totalCorrectAns ++;
+
             // change background color green
             mOption4Card.setBackground(ContextCompat.getDrawable(this,
                     R.drawable.rounded_green_transparent));
@@ -248,11 +322,15 @@ public class MainActivity extends AppCompatActivity {
         mOption4Card.setClickable(false);
         mOption1Card.setClickable(false);
 
+        mNextBt.setEnabled(true);
+
+
+
     }
 
 
-    public boolean isCorrect(String selectedAns) {
-        if (/*currentQuiz.getCorrectAns()*/"".equals(selectedAns)) {
+    public boolean isCorrect(int selectedAns) {
+        if (currentQuestion.getCorrectAns()==selectedAns) {
             return true;
         }
         return false;
@@ -260,8 +338,21 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void moveToNextQuiz() {
+        if (questionCount <= questionList.size()) {
+            setQuiz(questionList.get(questionCount-1));
+            reset();
+            mNextBt.setEnabled(false);
 
+        } else {
+            mNextBt.setEnabled(true);
+            mNextBt.setText("Finish");
+           //Toast.makeText(this, "score"+ totalCorrectAns, Toast.LENGTH_SHORT).show();
+            if (isFinished) {
+                updateParticipant();
+            }
 
+            isFinished = true;
+        }
 
     }
 
@@ -284,5 +375,86 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+    
+    public void updateParticipant() {
+
+        participant.setScore(totalCorrectAns);
+        participant.setTotalAnswered(totalAnswered);
+        participant.setTotalQuestion(quiz.getTotalQuestion());
+        
+        mParticipantViewModel.addParticipant(participant, quiz.getId()).addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                if (task.isSuccessful()) {
+                    Intent resultIntent = new Intent(MainActivity.this, ResultActivity.class);
+                    resultIntent.putExtra("quiz", quiz);
+                    startActivity(resultIntent);
+                    Toast.makeText(MainActivity.this, "You have successfully completed the quiz.",
+                            Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        });
+    }
+
+    public void reset() {
+
+        mOption3Card.setBackground(ContextCompat.getDrawable(this,
+                R.drawable.rounded_white_tranparent));
+
+        mOption2Card.setBackground(ContextCompat.getDrawable(this,
+                R.drawable.rounded_white_tranparent));
+
+        mOption4Card.setBackground(ContextCompat.getDrawable(this,
+                R.drawable.rounded_white_tranparent));
+
+        mOption1Card.setBackground(ContextCompat.getDrawable(this,
+                R.drawable.rounded_white_tranparent));
+
+        mOption1Card.setCardElevation(3);
+        mOption2Card.setCardElevation(3);
+        mOption3Card.setCardElevation(3);
+        mOption4Card.setCardElevation(3);
+
+        mOption2Card.setClickable(true);
+        mOption3Card.setClickable(true);
+        mOption4Card.setClickable(true);
+        mOption1Card.setClickable(true);
+
+
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        showWarningAlert();
+        
+    }
+
+
+    public void showWarningAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("You are exiting the quiz.");
+        builder.setIcon(R.drawable.ic_block_orange);
+        builder.setMessage("Please do not exit the quiz, otherwise you will not get any marks.");
+        builder.setPositiveButton("Exit Any Way", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish();
+                dialog.dismiss();
+
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }

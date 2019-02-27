@@ -39,7 +39,21 @@ public class QuizRepository {
 
     public Task addQuiz(Quiz quiz) {
         String key = mQuizRef.push().getKey();
+        quiz.setId(key);
         return mQuizRef.child(key).setValue(quiz);
     }
+
+    public Task updateQuiz(Quiz quiz) {
+        return mQuizRef.child(quiz.getId()).setValue(quiz);
+    }
+
+    public Task deleteQuiz(Quiz quiz) {
+        return mQuizRef.child(quiz.getId()).removeValue();
+    }
+
+    public LiveData<DataSnapshot> getQuizById(String quizId) {
+       return new FirebaseQueryLiveData( mQuizRef.child(quizId));
+    }
+
 
 }

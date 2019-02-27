@@ -28,4 +28,17 @@ public class QuizViewModel extends AndroidViewModel {
         return quizRepository.addQuiz(quiz);
     }
 
+    public Task deleteQuiz(Quiz quiz) {
+        return quizRepository.deleteQuiz(quiz);
+    }
+
+    public Task updateQuiz(Quiz quiz) {
+        return quizRepository.updateQuiz(quiz);
+    }
+
+    public LiveData<DataSnapshot> getQuizById(String quizId) {
+        return quizRepository.getQuizById(quizId);
+    }
+
+
 }

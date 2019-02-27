@@ -14,9 +14,11 @@
     <color name="green">#4CAF50</color>
     <color name="red_transparent">#88F44336</color>
     <color name="red">#F44336</color>
+    <color name="red_transparent_2">#EBF44336</color>
     <color name="red_dark">#6B0D07</color>
     <color name="blue">#3F51B5</color>
     <color name="lime_white">#f9fdff</color>
     <color name="purple">#673AB7</color>
+    <color name="actionbar_opacity">#33000000</color>
 
 </resources>

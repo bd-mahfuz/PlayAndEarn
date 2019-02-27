@@ -12,6 +12,7 @@ public class Quiz implements Serializable {
     private String cat_id;
     private int totalMarks;
     private int totalQuestion;
+    private String status = "un-published"; // published or complete
 
     public Quiz() {
     }
@@ -80,5 +81,13 @@ public class Quiz implements Serializable {
 
     public void setTimeLimit(String timeLimit) {
         this.timeLimit = timeLimit;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

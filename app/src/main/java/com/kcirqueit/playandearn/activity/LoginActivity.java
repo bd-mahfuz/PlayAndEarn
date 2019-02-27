@@ -17,6 +17,7 @@ import android.widget.EditText;
 import com.google.firebase.auth.FirebaseAuth;
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.sharedPreference.MySharedPreference;
+import com.kcirqueit.playandearn.utility.InternetConnection;
 import com.rilixtech.CountryCodePicker;
 
 public class LoginActivity extends AppCompatActivity {
@@ -47,16 +48,20 @@ public class LoginActivity extends AppCompatActivity {
 
         sharedPreference = MySharedPreference.getInstance(this);
 
-        if (mAuth.getCurrentUser() != null) {
-            String profileCreated = sharedPreference.getData("profileCreated");
-            if (profileCreated.equals("true")) {
-                startActivity(new Intent(this, DashBoard2.class));
-                finish();
-            } else {
-                startActivity(new Intent(this, UserInfoActivity.class));
-                finish();
-            }
+        if (InternetConnection.checkConnection(this)) {
+            if (mAuth.getCurrentUser() != null) {
+                String profileCreated = sharedPreference.getData("profileCreated");
+                if (profileCreated.equals("true")) {
+                    startActivity(new Intent(this, FragmentContainerActivity.class));
+                    finish();
+                } else {
+                    startActivity(new Intent(this, UserInfoActivity.class));
+                    finish();
+                }
 
+            }
+        } else {
+            InternetConnection.showNoInternetDialog(this);
         }
 
         setContentView(R.layout.activity_login);

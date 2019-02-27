@@ -13,7 +13,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.CreateQuizActivity"></activity>
+        <activity android:name=".activity.ResultActivity" />
+        <activity android:name=".activity.InstructionActivity" />
+        <activity
+            android:name=".activity.AddQuestionActivity"
+            android:parentActivityName=".activity.MyQuestionActivity" />
+        <activity android:name=".activity.MyQuestionActivity" />
+        <activity android:name=".activity.FragmentContainerActivity" />
+        <activity android:name=".activity.CreateQuizActivity" />
         <activity android:name=".activity.DashBoard2" />
         <activity
             android:name=".activity.WalletActivity"

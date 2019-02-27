@@ -58,4 +58,24 @@
     <string name="creator_name">Creator: Karim</string>
     <string name="time">1:30 hour</string>
     <string name="start_now">Start Now</string>
+    <string name="publish_now">Publish Now</string>
+    <string name="you_didn_t_create_any_quiz_yet">You did not create any quiz yet.</string>
+    <string name="published">published</string>
+    <string name="dummy_q_text">who the hell are you?</string>
+    <string name="question_title">Question Title</string>
+    <string name="option_2">Option 2</string>
+    <string name="option_3">Option 3</string>
+    <string name="option_4">Option 4</string>
+    <string name="select_correct_answer">Select Correct Answer</string>
+    <string name="quiz_details">Quiz Details</string>
+    <string name="instruction_1">Please do not press the back button after start the quiz. Otherwise you will do not get any marks.</string>
+    <string name="instruction">Instructions</string>
+    <string name="instruction_2">Answer all of the question. Otherwise you will don\'t get any marks.</string>
+    <string name="instruction_3">After selecting a option it will display the answer is correct or not instantly.</string>
+    <string name="instruction_4">You have to finish the quiz before the given time.</string>
+    <string name="instruction_5">After finishing the time quiz will be finish automatically.</string>
+    <string name="total_participator">Total Participator</string>
+    <string name="time_left">Time Left</string>
+    <string name="your_score">Your Score</string>
+    <string name="no_participation">You did\'t participated on any quiz.</string>
 </resources>

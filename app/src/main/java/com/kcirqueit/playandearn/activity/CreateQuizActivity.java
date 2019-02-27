@@ -9,12 +9,14 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +32,7 @@ import com.kcirqueit.playandearn.model.Quiz;
 import com.kcirqueit.playandearn.viewModel.QuizViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 public class CreateQuizActivity extends AppCompatActivity {
@@ -61,10 +64,20 @@ public class CreateQuizActivity extends AppCompatActivity {
 
     ProgressDialog mProgressDialog;
 
+    private String requestForEdit;
+    private Quiz quiz;
+
+    String timeLimit;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_quiz);
+
+        // getting data from intent
+        requestForEdit = getIntent().getStringExtra("requestForEdit");
+        quiz = (Quiz) getIntent().getSerializableExtra("quiz");
 
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
@@ -76,14 +89,38 @@ public class CreateQuizActivity extends AppCompatActivity {
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mCategoryRef = mRootRef.child("QuizCategory");
 
+        String toolbarTitle = "Create Quiz";
+        if (requestForEdit != null && quiz != null) {
+            toolbarTitle = "Edit Quiz";
+
+            setDataForEdit();
+        }
+
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Create Quiz");
+        getSupportActionBar().setTitle(toolbarTitle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-
-
     }
+
+
+    @OnClick(R.id.time_limit_et)
+    public void pickTime() {
+        int hour = 00;
+        int minute = 30;
+        TimePickerDialog mTimePicker;
+        mTimePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+            @Override
+            public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                long timeInMilli = (selectedHour * 3600000) + (selectedMinute * 60 * 1000);
+                timeLimit = String.valueOf(timeInMilli);
+                mTimeLimitEt.setText( selectedHour + ":" + selectedMinute);
+            }
+        }, hour, minute, true);//Yes 24 hour time
+        mTimePicker.setTitle("Select Time");
+        mTimePicker.show();
+    }
+
 
     @Override
     protected void onStart() {
@@ -149,34 +186,79 @@ public class CreateQuizActivity extends AppCompatActivity {
         int totalMarks = Integer.parseInt(mTotalMarksEt.getText().toString());
         int totalQuestion = Integer.parseInt(mTotalQuestionEt.getText().toString());
 
-        Quiz quiz = new Quiz(mCurrentUserId, quizName, quizCategory, totalMarks, totalQuestion, timeLimit);
+        if (requestForEdit == null) {
+            // create new quiz
+            Quiz quiz = new Quiz(mCurrentUserId, quizName, quizCategory, totalMarks, totalQuestion, this.timeLimit);
 
-        mProgressDialog.show();
-        quizViewModel.addQuiz(quiz).addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                if (task.isSuccessful()) {
+            mProgressDialog.show();
+            quizViewModel.addQuiz(quiz).addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
 
-                    Toast.makeText(CreateQuizActivity.this, "Quiz is successfully created!",
-                            Toast.LENGTH_SHORT).show();
-                    mProgressDialog.dismiss();
-                    gotoDashBoardActivity();
-                    finish();
+                        Toast.makeText(CreateQuizActivity.this, "Quiz is successfully created!",
+                                Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                        finish();
 
-                } else {
-                    Toast.makeText(CreateQuizActivity.this, "Quiz is not created!",
-                            Toast.LENGTH_SHORT).show();
-                    mProgressDialog.dismiss();
+                    } else {
+                        Toast.makeText(CreateQuizActivity.this, "Quiz is not created!",
+                                Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                    }
                 }
+            });
+        } else {
+            // update existing quiz
+            quiz.setQuizName(quizName);
+            quiz.setCat_id(quizCategory);
+            quiz.setTotalMarks(totalMarks);
+            quiz.setTotalQuestion(totalQuestion);
+            quiz.setTimeLimit(this.timeLimit);
+
+            mProgressDialog.show();
+            quizViewModel.updateQuiz(quiz).addOnCompleteListener(new OnCompleteListener() {
+                @Override
+                public void onComplete(@NonNull Task task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(CreateQuizActivity.this, "Quiz updated Successfully.",
+                                Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                        finish();
+                    }else {
+                        Toast.makeText(CreateQuizActivity.this, "Something went wrong. Quiz is not updated",
+                                Toast.LENGTH_SHORT).show();
+                        mProgressDialog.dismiss();
+                    }
+                }
+            });
+        }
+
+    }
+
+
+    private void setDataForEdit() {
+
+        mQuizNameEt.setText(quiz.getQuizName());
+        mTimeLimitEt.setText(quiz.getTimeLimit());
+        mTotalMarksEt.setText(quiz.getTotalMarks()+"");
+        mTotalQuestionEt.setText(quiz.getTotalQuestion()+"");
+
+        mCategorySpinner.setSelection(getSpinnerIndex());
+
+    }
+
+    public int getSpinnerIndex() {
+        int index = 0;
+        for (int i = 0; i < mCategorySpinner.getCount(); i++) {
+            if (mCategorySpinner.getItemAtPosition(i).equals(quiz.getCat_id())){
+                index = i;
+                Log.d("index:", index+"");
+                break;
             }
-        });
+        }
 
+        return index;
     }
 
-
-    public void gotoDashBoardActivity() {
-
-        startActivity(new Intent(this, DashBoard2.class));
-
-    }
 }

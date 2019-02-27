@@ -116,6 +116,7 @@
                         android:background="@drawable/border_white_back"
                         android:inputType="time"
                         android:padding="10dp"
+                        android:focusable="false"
                         android:hint="@string/time_limit"
                         tools:ignore="Autofill" />
 
