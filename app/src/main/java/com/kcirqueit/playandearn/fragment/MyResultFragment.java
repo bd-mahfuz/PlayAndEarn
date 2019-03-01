@@ -47,6 +47,7 @@ public class MyResultFragment extends Fragment {
     @BindView(R.id.my_result_rv)
     RecyclerView mMyResultRv;
 
+
     @BindView(R.id.no_quiz_result_layout)
     LinearLayout mLinearlayout;
 
@@ -87,6 +88,7 @@ public class MyResultFragment extends Fragment {
 
         ButterKnife.bind(this, view);
 
+        activity.getSupportActionBar().setCustomView(null);
         activity.getSupportActionBar().setTitle("Results");
 
         mMyResultRv.setLayoutManager(new LinearLayoutManager(activity));
@@ -114,7 +116,7 @@ public class MyResultFragment extends Fragment {
 
                             String quizId = dataSnapshot1.getKey();
                             if (dataSnapshot1.child(mCurrentUserId).getValue() != null) {
-
+                                mLinearlayout.setVisibility(View.GONE);
                                 mQuizRef.child(quizId).addListenerForSingleValueEvent(new ValueEventListener() {
 
                                     @Override
@@ -135,6 +137,8 @@ public class MyResultFragment extends Fragment {
 
 
                                 progressDialog.dismiss();
+                            } else {
+                                mLinearlayout.setVisibility(View.VISIBLE);
                             }
 
 

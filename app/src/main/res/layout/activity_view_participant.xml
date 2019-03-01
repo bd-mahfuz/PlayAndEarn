@@ -1,27 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.AchivementFragment">
+    tools:context=".activity.ViewParticipantActivity">
+
+    <include layout="@layout/dash_bar_layout"
+        android:id="@+id/participant_toolbar"/>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/achievement_rv"
+        android:id="@+id/participant_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:listitem="@layout/achivement_layout">
+        tools:listitem="@layout/layout_participant"
+        android:layout_below="@id/participant_toolbar">
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
-        android:id="@+id/no_achievement_tv"
+        android:id="@+id/no_participate_msg_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/no_participation"
-        android:textSize="18sp"
         android:layout_centerInParent="true"
+        android:text="@string/no_user_has_participated_yet"
+        android:textSize="18sp"
         android:visibility="gone"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible"/>
+
 
 </RelativeLayout>

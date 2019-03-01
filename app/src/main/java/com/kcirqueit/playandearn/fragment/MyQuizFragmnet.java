@@ -77,6 +77,7 @@ public class MyQuizFragmnet extends Fragment {
         View view =  inflater.inflate(R.layout.fragment_my_quiz_fragmnet, container, false);
         ButterKnife.bind(this, view);
 
+        activity.getSupportActionBar().setCustomView(null);
         activity.getSupportActionBar().setTitle("My Quiz");
 
         mQuizRv.setLayoutManager(new LinearLayoutManager(activity));

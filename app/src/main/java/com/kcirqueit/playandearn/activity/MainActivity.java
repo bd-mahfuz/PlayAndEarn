@@ -11,16 +11,12 @@ import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import android.animation.ValueAnimator;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -28,7 +24,6 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.dinuscxj.progressbar.CircleProgressBar;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
@@ -36,7 +31,6 @@ import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.model.Participant;
 import com.kcirqueit.playandearn.model.Question;
 import com.kcirqueit.playandearn.model.Quiz;
-import com.kcirqueit.playandearn.utility.DateUtility;
 import com.kcirqueit.playandearn.viewModel.ParticipantViewModel;
 import com.kcirqueit.playandearn.viewModel.QuestionViewModel;
 
@@ -378,10 +372,12 @@ public class MainActivity extends AppCompatActivity {
     }
     
     public void updateParticipant() {
-
-        participant.setScore(totalCorrectAns);
+        int marksPerQuestion = quiz.getTotalMarks() / quiz.getTotalQuestion();
+        participant.setScore(totalCorrectAns * marksPerQuestion);
         participant.setTotalAnswered(totalAnswered);
         participant.setTotalQuestion(quiz.getTotalQuestion());
+        participant.setQuizName(quiz.getQuizName());
+        participant.setTotalMarks(quiz.getTotalMarks());
         
         mParticipantViewModel.addParticipant(participant, quiz.getId()).addOnCompleteListener(new OnCompleteListener() {
             @Override
@@ -427,7 +423,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
         showWarningAlert();
         

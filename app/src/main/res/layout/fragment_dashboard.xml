@@ -25,7 +25,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingBottom="10dp"
+                    android:paddingBottom="15dp"
                     android:paddingTop="10dp">
 
                     <LinearLayout
@@ -55,8 +55,8 @@
 
 
                                 <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
                                     android:src="@drawable/ic_star_red_big"
                                     android:layout_gravity="center_horizontal"
                                     app:civ_border_width="1dp"
@@ -97,8 +97,8 @@
 
 
                                 <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
                                     android:layout_gravity="center_horizontal"
                                     android:padding="2dp"
                                     app:civ_border_width="1dp"
@@ -141,8 +141,8 @@
 
 
                                 <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
                                     android:layout_gravity="center_horizontal"
                                     android:padding="2dp"
                                     android:src="@drawable/ic_library_books_red"
@@ -191,8 +191,8 @@
 
 
                                 <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
                                     android:src="@drawable/ic_assignment_purple"
                                     android:layout_gravity="center_horizontal"
 
@@ -233,8 +233,8 @@
 
 
                                 <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
                                     android:src="@drawable/ic_av_timer_orange"
                                     android:layout_gravity="center_horizontal"
                                     app:civ_border_width="1dp"
@@ -276,8 +276,8 @@
 
 
                                 <de.hdodenhof.circleimageview.CircleImageView
-                                    android:layout_width="30dp"
-                                    android:layout_height="30dp"
+                                    android:layout_width="50dp"
+                                    android:layout_height="50dp"
                                     android:layout_gravity="center_horizontal"
                                     android:padding="2dp"
                                     android:src="@drawable/ic_bookmark_blue"
@@ -318,14 +318,16 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:layout_marginBottom="10dp">
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/quiz_rv"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="5dp"
-                    tools:listitem="@layout/layout_quiz_item">
+                    tools:listitem="@layout/layout_quiz_item"
+                    android:layout_marginBottom="5dp">
                 </androidx.recyclerview.widget.RecyclerView>
 
                 <TextView

@@ -35,8 +35,6 @@
                     app:style="solid_line"
                     app:progress_stroke_width="5dp"
                     app:progress_background_color="@color/red"
-                    app:progress_start_color="@android:color/white"
-                    app:progress_end_color="@color/gray_transparent"
                     app:progress_text_color="@android:color/white"
                     app:progress_text_size="30sp"
                     android:layout_width="120dp"

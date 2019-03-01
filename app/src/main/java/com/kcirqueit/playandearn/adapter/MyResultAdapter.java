@@ -44,6 +44,9 @@ public class MyResultAdapter extends RecyclerView.Adapter<MyResultAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        holder.bookmarkIv.setVisibility(View.GONE);
+        holder.creatorTv.setVisibility(View.GONE);
+
         Quiz quiz = quizList.get(position);
 
         holder.quizName.setText(quiz.getQuizName());

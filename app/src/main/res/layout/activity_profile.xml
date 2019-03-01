@@ -7,7 +7,7 @@
     tools:context=".activity.ProfileActivity">
 
 
-    <include layout="@layout/app_bar_layout"
+    <include layout="@layout/dash_bar_layout"
         android:id="@+id/profile_toolbar"/>
 
     <ScrollView
@@ -101,7 +101,8 @@
                             android:layout_marginRight="10dp"
                             android:text="Edit"
                             android:textColor="@color/blue"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            android:padding="5dp"/>
 
                         <EditText
                             android:id="@+id/p_user_name_et"
@@ -112,9 +113,7 @@
                             android:layout_marginBottom="5dp"
                             android:background="@drawable/border_white_back"
                             android:enabled="false"
-                            android:inputType="none"
                             android:padding="10dp"
-                            android:focusable="false"
                             android:text="@string/dummy_user" />
 
                     </RelativeLayout>
@@ -180,7 +179,8 @@
                             android:layout_marginRight="10dp"
                             android:text="Edit"
                             android:textColor="@color/blue"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            android:padding="5dp"/>
 
                         <EditText
                             android:id="@+id/p_email_et"
@@ -193,7 +193,6 @@
                             android:enabled="false"
                             android:inputType="textEmailAddress"
                             android:padding="10dp"
-                            android:focusable="false"
                             android:text="@string/dummy_email" />
 
                     </RelativeLayout>
@@ -225,7 +224,8 @@
                             android:layout_marginRight="10dp"
                             android:text="Edit"
                             android:textColor="@color/blue"
-                            android:textSize="12sp" />
+                            android:textSize="12sp"
+                            android:padding="5dp"/>
 
                         <EditText
                             android:id="@+id/pr_dob_et"
@@ -236,8 +236,6 @@
                             android:layout_marginBottom="5dp"
                             android:background="@drawable/border_white_back"
                             android:enabled="false"
-                            android:focusable="false"
-                            android:inputType="none"
                             android:padding="10dp"
                             android:text="@string/dummy_dob" />
 

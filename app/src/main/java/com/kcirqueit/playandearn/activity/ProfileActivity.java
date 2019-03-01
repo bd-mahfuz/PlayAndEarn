@@ -416,6 +416,7 @@ public class ProfileActivity extends AppCompatActivity {
     @OnClick(R.id.edit_name_tv)
     public void editName() {
         mUserNameEt.setEnabled(true);
+        mUserNameEt.setFocusable(true);
         mUpdateBt.setEnabled(true);
         mUpdateBt.setTextColor(ContextCompat.getColor(this,android.R.color.white));
 
@@ -424,6 +425,7 @@ public class ProfileActivity extends AppCompatActivity {
     @OnClick(R.id.edit_email_tv)
     public void editEmail() {
         mEmailEt.setEnabled(true);
+        mEmailEt.setFocusable(true);
         mUpdateBt.setEnabled(true);
         mUpdateBt.setTextColor(ContextCompat.getColor(this,android.R.color.white));
     }
@@ -431,6 +433,7 @@ public class ProfileActivity extends AppCompatActivity {
     @OnClick(R.id.edit_dob_tv)
     public void editDOB() {
         mDobEt.setEnabled(true);
+        mDobEt.setFocusable(true);
         mUpdateBt.setEnabled(true);
         mUpdateBt.setTextColor(ContextCompat.getColor(this,android.R.color.white));
     }
@@ -446,6 +449,11 @@ public class ProfileActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        return super.onOptionsItemSelected(item);
+
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+
+        return true;
     }
 }

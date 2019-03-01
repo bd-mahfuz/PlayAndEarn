@@ -98,7 +98,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
         View view = inflater.inflate(R.layout.fragment_bookmark, container, false);
         ButterKnife.bind(this, view);
 
-
+        activity.getSupportActionBar().setCustomView(null);
         activity.getSupportActionBar().setTitle("Bookmark");
 
         mBookmarkRv.setLayoutManager(new LinearLayoutManager(activity));
@@ -162,9 +162,28 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
-                    Log.d(TAG, dataSnapshot.getValue() + "");
-                    gotoResultActivity();
-                    progressDialog.dismiss();
+
+                    mQuizRef.child(quizId).addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.getValue() != null) {
+                                Quiz quiz = dataSnapshot.getValue(Quiz.class);
+                                gotoResultActivity(quiz);
+                                progressDialog.dismiss();
+                            } else {
+                                Toast.makeText(activity, "Quiz not found.", Toast.LENGTH_SHORT).show();
+                                progressDialog.dismiss();
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Log.d(TAG, databaseError.toException().toString());
+                            progressDialog.dismiss();
+                        }
+                    });
+                    //Log.d(TAG, dataSnapshot.getValue() + "");
+
                 } else {
 
                     mQuizRef.child(quizId).addValueEventListener(new ValueEventListener() {
@@ -183,6 +202,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
                             Log.d(TAG, databaseError.toException().toString());
+                            progressDialog.dismiss();
                         }
                     });
                 }
@@ -206,7 +226,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
                 Log.d(TAG, "inside erooor");
                 if (dataSnapshot.getValue() != null) {
 
-                    gotoResultActivity();
+                    //gotoResultActivity(quizId);
                     progressDialog.dismiss();
 
                 } else {
@@ -254,8 +274,9 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
 
     }
 
-    public void gotoResultActivity() {
+    public void gotoResultActivity(Quiz quiz) {
         Intent resultIntent = new Intent(activity, ResultActivity.class);
+        resultIntent.putExtra("quiz", quiz);
         startActivity(resultIntent);
     }
 

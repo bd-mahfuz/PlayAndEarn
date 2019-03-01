@@ -78,4 +78,7 @@
     <string name="time_left">Time Left</string>
     <string name="your_score">Your Score</string>
     <string name="no_participation">You did\'t participated on any quiz.</string>
+    <string name="score_percent">Score(Percent)</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="no_user_has_participated_yet">No user has participated yet</string>
 </resources>

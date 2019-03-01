@@ -26,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.activity.CreateQuizActivity;
 import com.kcirqueit.playandearn.activity.MyQuestionActivity;
+import com.kcirqueit.playandearn.activity.ViewParticipantActivity;
 import com.kcirqueit.playandearn.model.Quiz;
 import com.kcirqueit.playandearn.utility.DateUtility;
 import com.kcirqueit.playandearn.utility.InternetConnection;
@@ -127,6 +128,7 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
             Menu menu = popupMenu.getMenu();
             menu.add("Edit");
             menu.add("Delete");
+            menu.add("View Participants");
             menu.add("Publish Quiz");
             popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
@@ -163,6 +165,11 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
                         }  else {
                             Toast.makeText(context, "Quiz is already Publish. You Can't Delete the Quiz", Toast.LENGTH_SHORT).show();
                         }
+
+                    } else if (item.getTitle().equals("View Participants")){
+
+                        // goto ViewParticipantActivity
+                        gotoParticipanteActivity(quizzes.get(getAdapterPosition()));
 
                     } else if (item.getTitle().equals("Publish Quiz")) {
                         if (isPublished()) {
@@ -325,6 +332,15 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
                     }
                 }
             });
+        }
+
+
+        public void gotoParticipanteActivity(Quiz quiz) {
+
+            Intent participantIntent = new Intent(context, ViewParticipantActivity.class);
+            participantIntent.putExtra("quiz", quiz);
+            context.startActivity(participantIntent);
+
         }
 
 

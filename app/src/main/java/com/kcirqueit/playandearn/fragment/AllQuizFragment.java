@@ -6,23 +6,22 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -37,18 +36,13 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kcirqueit.playandearn.R;
-import com.kcirqueit.playandearn.activity.CreateQuizActivity;
-import com.kcirqueit.playandearn.activity.DashBoardActivity;
 import com.kcirqueit.playandearn.activity.FragmentContainerActivity;
 import com.kcirqueit.playandearn.activity.InstructionActivity;
-import com.kcirqueit.playandearn.activity.ProfileActivity;
 import com.kcirqueit.playandearn.activity.ResultActivity;
 import com.kcirqueit.playandearn.adapter.QuizAdapter;
 import com.kcirqueit.playandearn.model.Quiz;
-import com.kcirqueit.playandearn.model.User;
 import com.kcirqueit.playandearn.utility.InternetConnection;
 import com.kcirqueit.playandearn.viewModel.QuizViewModel;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,21 +52,18 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class DashboardFragment extends Fragment implements SearchView.OnQueryTextListener, QuizAdapter.OnItemClickListener {
+public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextListener, QuizAdapter.OnItemClickListener{
 
+    private static final String TAG = "AllQuizFragment";
 
-    private static final String TAG = "DashboardFragment";
-
-    @BindView(R.id.quiz_rv)
+    @BindView(R.id.a_quiz_rv)
     RecyclerView mQuizRv;
 
-    @BindView(R.id.quiz_search_view)
+    @BindView(R.id.a_quiz_search_view)
     SearchView mQuizSearchView;
 
-    @BindView(R.id.no_quiz_Tv)
+    @BindView(R.id.a_no_quiz_Tv)
     TextView mNoQuizMsg;
-
-    private CircleImageView mUserIv;
 
     private QuizViewModel quizViewModel;
 
@@ -81,18 +72,16 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
     private QuizAdapter mQuizAdapter;
 
     private FragmentContainerActivity activity;
-
-
     private DatabaseReference mBookMarkRef;
     private DatabaseReference mParticipantRef;
     private DatabaseReference mQuizRef;
     private DatabaseReference mUserRef;
 
     private FirebaseAuth mAuth;
-    
-    private  User user;
 
-    public DashboardFragment() {
+
+
+    public AllQuizFragment() {
         // Required empty public constructor
     }
 
@@ -110,77 +99,26 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
         mUserRef = FirebaseDatabase.getInstance().getReference().child("Users");
 
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        View view =  inflater.inflate(R.layout.fragment_all_quiz, container, false);
+
 
         ButterKnife.bind(this, view);
         quizViewModel = ViewModelProviders.of(this).get(QuizViewModel.class);
 
+        activity.getSupportActionBar().setCustomView(null);
+        activity.getSupportActionBar().setTitle("All Quizzes");
 
         mQuizRv.setLayoutManager(new LinearLayoutManager(activity));
 
 
         mQuizSearchView.setOnQueryTextListener(this);
 
-
         return view;
     }
-
-    @OnClick(R.id.create_quiz_layout)
-    public void onClickCreateQuiz() {
-        startActivity(new Intent(activity, CreateQuizActivity.class));
-    }
-
-    @OnClick(R.id.my_quiz_layout)
-    public void onClickMyQuizLayout() {
-        replaceFragment(new MyQuizFragmnet());
-    }
-
-    @OnClick(R.id.bookmark_layout)
-    public void onClickBookmarkLayout() {
-        replaceFragment(new BookmarkFragment());
-    }
-
-    @OnClick(R.id.result_layout)
-    public void onClickResultLayout() {
-        replaceFragment(new MyResultFragment());
-    }
-
-    @OnClick(R.id.achievement_layout)
-    public void onClickAchivementLayout() {
-        replaceFragment(new AchivementFragment());
-    }
-
-    @OnClick(R.id.all_quiz_layout)
-    public void onClickAllQuizLayout() {
-        replaceFragment(new AllQuizFragment());
-    }
-
 
     @Override
     public void onStart() {
         super.onStart();
-
-        setToolbar();
-
-        mUserRef.child(mAuth.getCurrentUser().getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    user = dataSnapshot.getValue(User.class);
-                    if (!user.getPhotoUrl().equals("default")) {
-                        Picasso.get().load(user.getPhotoUrl())
-                                .placeholder(R.drawable.user_avater).into(mUserIv);
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, databaseError.toException().toString());
-            }
-        });
-
-        activity.getSupportActionBar().setTitle("Dashboard");
 
         ProgressDialog progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage("Loading...");
@@ -202,7 +140,7 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
                     if (quizzes.size() > 0) {
                         mNoQuizMsg.setVisibility(View.GONE);
                         mQuizAdapter = new QuizAdapter(activity, quizzes);
-                        mQuizAdapter.setItemClickListener(DashboardFragment.this);
+                        mQuizAdapter.setItemClickListener(AllQuizFragment.this);
                         mQuizRv.setAdapter(mQuizAdapter);
 
                     } else {
@@ -216,17 +154,10 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d(TAG, databaseError.toException().toString());
             }
         });
 
-        /*quizViewModel.getAllQuiz().observe(this, new Observer<DataSnapshot>() {
-            @Override
-            public void onChanged(DataSnapshot dataSnapshot) {
-
-            }
-        });
-*/
     }
 
     @Override
@@ -241,14 +172,6 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
     }
 
 
-    public void replaceFragment(Fragment fragment) {
-        FragmentTransaction ft = activity.getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment_container, fragment);
-        ft.addToBackStack(null);
-        ft.commit();
-
-    }
-
     @Override
     public void onBookmarkClick(Quiz quiz) {
         Map map = new HashMap();
@@ -258,34 +181,33 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
         if (InternetConnection.checkConnection(activity)) {
             mBookMarkRef.child(mAuth.getCurrentUser().getUid()).child(quiz.getId())
                     .addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                    if (dataSnapshot.getValue() != null) {
-                        Toast.makeText(activity, "Bookmarked already added.", Toast.LENGTH_SHORT).show();
-                    } else {
-                        mBookMarkRef.child(mAuth.getCurrentUser().getUid()).child(quiz.getId())
-                                .setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(activity, "Bookmark is added.", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(activity, "Something went wrong. Bookmark is not added.", Toast.LENGTH_SHORT).show();
-                                }
+                            if (dataSnapshot.getValue() != null) {
+                                Toast.makeText(activity, "Bookmarked already added.", Toast.LENGTH_SHORT).show();
+                            } else {
+                                mBookMarkRef.child(mAuth.getCurrentUser().getUid()).child(quiz.getId())
+                                        .setValue(map).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(activity, "Bookmark is added.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(activity, "Something went wrong. Bookmark is not added.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                });
                             }
-                        });
-                    }
 
-                }
+                        }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(activity, "Something is wrong please contact with developer.", Toast.LENGTH_SHORT).show();
-                    Log.d(TAG, databaseError.toException().toString());
-                }
-            });
-
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                            Toast.makeText(activity, "Something is wrong please contact with developer.", Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, databaseError.toException().toString());
+                        }
+                    });
         } else {
             InternetConnection.showNoInternetDialog(activity);
         }
@@ -294,10 +216,11 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
     @Override
     public void onItemClick(Quiz quiz) {
         if (InternetConnection.checkConnection(activity)) {
+
             if(mAuth.getCurrentUser().getUid().equals(quiz.getUserId())) {
 
                 Toast.makeText(activity, "You can't participate your own created quiz.", Toast.LENGTH_SHORT).show();
-                
+
             } else {
 
                 mParticipantRef.child(quiz.getId())
@@ -324,8 +247,10 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
                                 Log.d("Quiz adapter:", databaseError.toException().toString());
                             }
                         });
-                
+
             }
+
+
         } else {
             InternetConnection.showNoInternetDialog(activity);
         }
@@ -375,24 +300,24 @@ public class DashboardFragment extends Fragment implements SearchView.OnQueryTex
         });
     }
 
-    public void setToolbar() {
-        ActionBar actionBar = activity.getSupportActionBar();
-        if (actionBar != null) {
-            actionBar.setTitle("Dashboard");
-            actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setDisplayShowCustomEnabled(true);
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 
-            View view = LayoutInflater.from(activity).inflate(R.layout.profile_toolbar, null);
-            mUserIv = view.findViewById(R.id.profile_iv);
-            actionBar.setCustomView(view);
-            mUserIv.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent profileIntent = new Intent(activity, ProfileActivity.class);
-                    startActivity(profileIntent);
-                }
-            });
-
-        }
+        super.onCreateOptionsMenu(menu, inflater);
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            if (getFragmentManager().getBackStackEntryCount() != 0) {
+                getFragmentManager().popBackStack();
+            }
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }

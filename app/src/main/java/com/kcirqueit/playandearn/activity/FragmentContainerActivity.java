@@ -1,12 +1,17 @@
 package com.kcirqueit.playandearn.activity;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Toast;
 
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.fragment.DashboardFragment;
@@ -25,8 +30,8 @@ public class FragmentContainerActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Quiz Dashboard");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+
 
         addFragment();
     }
@@ -36,4 +41,5 @@ public class FragmentContainerActivity extends AppCompatActivity {
         ft.replace(R.id.fragment_container, new DashboardFragment());
         ft.commit();
     }
+
 }

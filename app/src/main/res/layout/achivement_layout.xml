@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,34 +12,58 @@
 
     <ImageView
         android:id="@+id/trophy_iv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:src="@drawable/trophy_golden"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"/>
+        android:layout_centerVertical="true"/>
 
-    <TextView
-        android:id="@+id/a_quiz_name_tv"
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/quiz_name"
-        android:layout_marginTop="10dp"
-        android:textSize="18sp"
-        android:layout_marginLeft="40sp"/>
+        android:layout_toRightOf="@id/trophy_iv">
 
-    <TextView
-        android:id="@+id/a_score_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="95%"
-        android:layout_marginTop="20dp"
-        android:layout_below="@id/a_quiz_name_tv"
-        android:layout_centerHorizontal="true"
-        android:textSize="30sp"
-        android:layout_marginLeft="40sp"
-        android:textColor="@android:color/black"/>
+        <TextView
+            android:id="@+id/a_quiz_name_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="@string/quiz_name"
+            android:textColor="@android:color/white"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:paddingBottom="2dp"
+            android:paddingTop="2dp"
+            android:layout_marginLeft="10sp"
+            android:background="@drawable/border_orange_back" />
+
+
+        <com.dinuscxj.progressbar.CircleProgressBar
+            android:id="@+id/a_score_tv"
+            android:layout_marginTop="5dp"
+            app:style="solid_line"
+            app:progress_stroke_width="5dp"
+            app:progress_background_color="@color/gray_transparent"
+            app:progress_start_color="@android:color/white"
+            app:progress_end_color="@color/lime_white"
+            android:layout_centerHorizontal="true"
+            app:progress_text_color="@android:color/black"
+            app:progress_text_size="18sp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/a_quiz_name_tv"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/score_percent"
+            android:textSize="12sp"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/a_score_tv"/>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

@@ -9,6 +9,9 @@ public class Participant implements Serializable {
     private int score;
     private int totalAnswered;
     private int totalQuestion;
+    private String quizName;
+    private int totalMarks;
+    private String userName;
 
     public Participant() {
     }
@@ -22,6 +25,29 @@ public class Participant implements Serializable {
     }
 
 
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getTotalMarks() {
+        return totalMarks;
+    }
+
+    public void setTotalMarks(int totalMarks) {
+        this.totalMarks = totalMarks;
+    }
+
+    public String getQuizName() {
+        return quizName;
+    }
+
+    public void setQuizName(String quizName) {
+        this.quizName = quizName;
+    }
 
     public String getId() {
         return id;

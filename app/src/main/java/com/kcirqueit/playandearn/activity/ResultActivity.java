@@ -10,6 +10,8 @@ import android.animation.ValueAnimator;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
@@ -93,7 +95,7 @@ public class ResultActivity extends AppCompatActivity {
                     Participant participant = dataSnapshot.getValue(Participant.class);
 
                     mQuizNameTv.setText(quiz.getQuizName());
-                    mTotalMarksEt.setText(quiz.getTotalQuestion()+"");
+                    mTotalMarksEt.setText(quiz.getTotalMarks()+"");
                     mTtimeLimitEt.setText(DateUtility.milliToHour(Long.parseLong(quiz.getTimeLimit())));
                     mTotalQuestionTv.setText(quiz.getTotalQuestion()+"");
 
@@ -107,7 +109,7 @@ public class ResultActivity extends AppCompatActivity {
                         }
                     });
 
-                    simulateProgress(participant.getScore());
+                    simulateProgress(participant.getScore(), quiz.getTotalMarks());
 
 
                 } else {
@@ -133,13 +135,14 @@ public class ResultActivity extends AppCompatActivity {
         }
     }
 
-    private void simulateProgress(int max) {
-        ValueAnimator animator = ValueAnimator.ofInt(0, max);
+    private void simulateProgress(int max, int totalMarks) {
+        ValueAnimator animator = ValueAnimator.ofInt(max);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int progress = (int) animation.getAnimatedValue();
                 mCustomProgressBar.setProgress(progress);
+                mCustomProgressBar.setMax(totalMarks);
             }
         });
 
@@ -147,4 +150,18 @@ public class ResultActivity extends AppCompatActivity {
         animator.start();
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home)
+        {
+            finish();
+        }
+        return true;
+    }
 }
