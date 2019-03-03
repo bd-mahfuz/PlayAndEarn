@@ -96,7 +96,7 @@ public class ResultActivity extends AppCompatActivity {
 
                     mQuizNameTv.setText(quiz.getQuizName());
                     mTotalMarksEt.setText(quiz.getTotalMarks()+"");
-                    mTtimeLimitEt.setText(DateUtility.milliToHour(Long.parseLong(quiz.getTimeLimit())));
+                    mTtimeLimitEt.setText(DateUtility.milliToHour(Long.parseLong(quiz.getTimeLimit()))+" hours");
                     mTotalQuestionTv.setText(quiz.getTotalQuestion()+"");
 
                     mAansweredTv.setText(participant.getTotalAnswered()+"");

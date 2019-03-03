@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -42,7 +43,7 @@ public class AchivementFragment extends Fragment {
     private static final String TAG = "AchivementFragment";
 
     @BindView(R.id.no_achievement_tv)
-    TextView noAchieveTv;
+    LinearLayout noAchieveTv;
 
     @BindView(R.id.achievement_rv)
     RecyclerView mAchieveRv;
@@ -116,8 +117,15 @@ public class AchivementFragment extends Fragment {
                                     if (dataSnapshot.getValue() != null) {
 
                                         Participant participant = dataSnapshot.getValue(Participant.class);
-                                        participantList.add(participant);
-                                        adapter.notifyDataSetChanged();
+                                        int percentValue = getParcentageValue(participant.getScore(), participant.getTotalMarks());
+                                        if (percentValue >= 80) {
+                                            if (noAchieveTv.getVisibility() == View.VISIBLE) {
+                                                noAchieveTv.setVisibility(View.GONE);
+                                            }
+                                            participantList.add(participant);
+                                            adapter.notifyDataSetChanged();
+                                        }
+
                                         progressDialog.dismiss();
 
                                     }
@@ -131,6 +139,7 @@ public class AchivementFragment extends Fragment {
                                 }
                             });
                         }
+                        noAchieveTv.setVisibility(View.VISIBLE);
                         progressDialog.dismiss();
 
                     } else {
@@ -143,6 +152,12 @@ public class AchivementFragment extends Fragment {
             progressDialog.dismiss();
         }
 
+
+    }
+
+    public int getParcentageValue(int score, int totalMarks) {
+        int pa = (score * 100) / totalMarks;
+        return pa;
 
     }
 }

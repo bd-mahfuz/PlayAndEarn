@@ -68,7 +68,7 @@ public class VerificationActivity extends AppCompatActivity {
         mPhoneNumber = getIntent().getStringExtra("phoneNumber");
         mCountryName = getIntent().getStringExtra("country");
 
-        Log.d("Phone number:", mPhoneNumber);
+       // Log.d("Phone number:", mPhoneNumber);
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Please wait ...");
@@ -116,7 +116,7 @@ public class VerificationActivity extends AppCompatActivity {
                                 @Override
                                 public void onChanged(DataSnapshot dataSnapshot) {
                                     if (dataSnapshot.getValue() != null) {
-                                        Intent dashIntent = new Intent(VerificationActivity.this, DashBoardActivity.class);
+                                        Intent dashIntent = new Intent(VerificationActivity.this, FragmentContainerActivity.class);
                                         startActivity(dashIntent);
                                         mProgressDialog.dismiss();
                                         finish();
@@ -146,7 +146,7 @@ public class VerificationActivity extends AppCompatActivity {
     }
 
     public void sendVerificationCode(String number) {
-        Log.d("VerificationCode meth:", "called ");
+        //Log.d("VerificationCode meth:", "called ");
         PhoneAuthProvider.getInstance().verifyPhoneNumber(
                 number,
                 60,
@@ -165,14 +165,14 @@ public class VerificationActivity extends AppCompatActivity {
                 public void onCodeSent(String s, PhoneAuthProvider.ForceResendingToken forceResendingToken) {
                     super.onCodeSent(s, forceResendingToken);
                     mVerificationId = s;
-                    Log.d("VerificationId:", mVerificationId);
+                    //Log.d("VerificationId:", mVerificationId);
                 }
 
                 @Override
                 public void onVerificationCompleted(PhoneAuthCredential phoneAuthCredential) {
 
                     String code = phoneAuthCredential.getSmsCode();
-                    Log.d("verification code:", code + "");
+                    //Log.d("verification code:", code + "");
                     if (code != null) {
                         mCodeEt.setText(code);
                         mProgressDialog.dismiss();

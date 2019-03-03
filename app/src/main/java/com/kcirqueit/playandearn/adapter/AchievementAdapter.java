@@ -45,6 +45,12 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Participant participant = participantList.get(position);
         holder.quizNameTv.setText("Quiz Name: " + participantList.get(position).getQuizName());
+        int percentValue = holder.getParcentageValue(participant.getScore(), participant.getTotalMarks());
+        if (percentValue < 90 && percentValue >= 80) {
+            holder.trophyIv.setImageResource(R.drawable.trophy_silver);
+        } else {
+            holder.trophyIv.setImageResource(R.drawable.trophy_golden);
+        }
 
         holder.mCustomProgressBar.setProgressFormatter(new CircleProgressBar.ProgressFormatter() {
             @Override
@@ -53,7 +59,7 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
             }
         });
 
-        holder.simulateProgress(holder.getParcentageValue(participant.getScore(), participant.getTotalMarks()));
+        holder.simulateProgress(percentValue);
 
     }
 

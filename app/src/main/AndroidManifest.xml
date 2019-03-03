@@ -22,7 +22,6 @@
         <activity android:name=".activity.MyQuestionActivity" />
         <activity android:name=".activity.FragmentContainerActivity" />
         <activity android:name=".activity.CreateQuizActivity" />
-        <activity android:name=".activity.DashBoard2" />
         <activity
             android:name=".activity.WalletActivity"
             android:parentActivityName=".activity.DashBoardActivity" />

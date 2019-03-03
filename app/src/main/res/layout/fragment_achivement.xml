@@ -13,15 +13,32 @@
 
     </androidx.recyclerview.widget.RecyclerView>
 
-    <TextView
+    <LinearLayout
         android:id="@+id/no_achievement_tv"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/no_participation"
-        android:textSize="18sp"
         android:layout_centerInParent="true"
+        android:orientation="vertical"
         android:visibility="gone"
-        tools:visibility="visible"
-        />
+        tools:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_participation"
+            android:textSize="18sp"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/or_your_score_is_not_too_good"
+            android:layout_gravity="center_horizontal"
+            />
+
+    </LinearLayout>
+
+
 
 </RelativeLayout>

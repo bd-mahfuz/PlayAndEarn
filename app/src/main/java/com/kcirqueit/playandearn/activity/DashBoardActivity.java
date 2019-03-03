@@ -75,11 +75,6 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
                 new AdRequest.Builder().build());
     }
 
-    @OnClick(R.id.play_quiz_bt)
-    public void onPlayClick() {
-        startActivity(new Intent(this, DashBoard2.class));
-    }
-
     @OnClick(R.id.video_bt)
     public void onVideoClick() {
         if (mRewardedVideoAd.isLoaded()) {
