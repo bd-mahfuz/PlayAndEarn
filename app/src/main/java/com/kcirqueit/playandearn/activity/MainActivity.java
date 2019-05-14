@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -39,9 +41,6 @@ import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
-
-
-
 
     @BindView(R.id.main_toolbar)
     Toolbar mToolbar;
@@ -121,7 +120,10 @@ public class MainActivity extends AppCompatActivity {
 
         startTimer();
 
+
     }
+
+
 
 
 
@@ -349,27 +351,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-
-            case R.id.wallet_menu:
-                Intent walletIntent = new Intent(this, WalletActivity.class);
-                startActivity(walletIntent);
-                break;
-
-        }
-
-        return true;
-    }
     
     public void updateParticipant() {
         int marksPerQuestion = quiz.getTotalMarks() / quiz.getTotalQuestion();
@@ -378,13 +359,15 @@ public class MainActivity extends AppCompatActivity {
         participant.setTotalQuestion(quiz.getTotalQuestion());
         participant.setQuizName(quiz.getQuizName());
         participant.setTotalMarks(quiz.getTotalMarks());
+        participant.setTimeLimit(quiz.getTimeLimit());
+        participant.setQuizId(quiz.getId());
         
         mParticipantViewModel.addParticipant(participant, quiz.getId()).addOnCompleteListener(new OnCompleteListener() {
             @Override
             public void onComplete(@NonNull Task task) {
                 if (task.isSuccessful()) {
                     Intent resultIntent = new Intent(MainActivity.this, ResultActivity.class);
-                    resultIntent.putExtra("quiz", quiz);
+                    resultIntent.putExtra("quizId", quiz.getId());
                     startActivity(resultIntent);
                     Toast.makeText(MainActivity.this, "You have successfully completed the quiz.",
                             Toast.LENGTH_SHORT).show();

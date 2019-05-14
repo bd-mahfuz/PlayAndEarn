@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class Participant implements Serializable {
 
     private String id;
+    private String quizId;
     private String isFinished;
     private int score;
     private int totalAnswered;
@@ -12,6 +13,7 @@ public class Participant implements Serializable {
     private String quizName;
     private int totalMarks;
     private String userName;
+    private String timeLimit;
 
     public Participant() {
     }
@@ -24,6 +26,21 @@ public class Participant implements Serializable {
         this.totalQuestion = totalQuestion;
     }
 
+    public String getQuizId() {
+        return quizId;
+    }
+
+    public void setQuizId(String quizId) {
+        this.quizId = quizId;
+    }
+
+    public String getTimeLimit() {
+        return timeLimit;
+    }
+
+    public void setTimeLimit(String timeLimit) {
+        this.timeLimit = timeLimit;
+    }
 
     public String getUserName() {
         return userName;

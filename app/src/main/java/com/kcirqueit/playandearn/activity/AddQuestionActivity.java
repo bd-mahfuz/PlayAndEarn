@@ -9,8 +9,10 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -61,6 +63,8 @@ public class AddQuestionActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String mCurrentuser;
 
+    String totalQuestion;
+
     private QuestionViewModel questionViewModel;
 
 
@@ -76,8 +80,11 @@ public class AddQuestionActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         mCurrentuser = mAuth.getCurrentUser().getUid();
 
+        Log.d("on create:", "called");
+
         // fetching data from intent
         quizId = getIntent().getStringExtra("quizId");
+        totalQuestion = getIntent().getStringExtra("totalQuestion");
 
         requestForEdit = getIntent().getStringExtra("requestForEdit");
         question = (Question) getIntent().getSerializableExtra("question");
@@ -163,11 +170,23 @@ public class AddQuestionActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Toast.makeText(AddQuestionActivity.this, "Question is Updated!",
                                 Toast.LENGTH_SHORT).show();
-                        finish();
+                        //finish();
+
+                        /*Intent myQuestionIntent = new Intent(AddQuestionActivity.this, MyQuestionActivity.class);
+                        myQuestionIntent.putExtra("quizId", quizId);
+                        myQuestionIntent.putExtra("totalQuestion", totalQuestion);
+                        startActivity(myQuestionIntent);*/
+                        onBackPressed();
+
                     } else {
                         Toast.makeText(AddQuestionActivity.this, "Question is not Updated! Something is wrong.",
                                 Toast.LENGTH_SHORT).show();
-                        finish();
+                        /*Intent myQuestionIntent = new Intent(AddQuestionActivity.this, MyQuestionActivity.class);
+                        myQuestionIntent.putExtra("quizId", quizId);
+                        myQuestionIntent.putExtra("totalQuestion", totalQuestion);
+                        startActivity(myQuestionIntent);*/
+
+                        onBackPressed();
                     }
                 }
             });
@@ -194,6 +213,16 @@ public class AddQuestionActivity extends AppCompatActivity {
 
 
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     public void setData() {

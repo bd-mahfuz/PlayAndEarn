@@ -22,6 +22,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -73,6 +76,8 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
     private List<Map<String, String>> bookmarkList = new ArrayList<>();
     private BookmarkAdapter adapter;
 
+    private AdView mAdView;
+
     public BookmarkFragment() {
         // Required empty public constructor
     }
@@ -81,6 +86,9 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        MobileAds.initialize(activity,
+                getString(R.string.admob_app_id));
 
         mAuth = FirebaseAuth.getInstance();
         participantViewModel = ViewModelProviders.of(this).get(ParticipantViewModel.class);
@@ -103,6 +111,10 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
 
         mBookmarkRv.setLayoutManager(new LinearLayoutManager(activity));
 
+        mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
 
         return view;
     }
@@ -114,7 +126,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
         ProgressDialog progressDialog = new ProgressDialog(activity);
         progressDialog.setMessage("Loading...");
         progressDialog.show();
-        Log.d("userId:", mAuth.getCurrentUser().getUid());
+        //Log.d("userId:", mAuth.getCurrentUser().getUid());
         mBookMarkRef.child(mAuth.getCurrentUser().getUid()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -138,6 +150,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
                     progressDialog.dismiss();
 
                 } else {
+                    noBookmarkFoundTv.setText("Bookmark not found!");
                     noBookmarkFoundTv.setVisibility(View.VISIBLE);
                     progressDialog.dismiss();
                 }
@@ -168,8 +181,14 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.getValue() != null) {
                                 Quiz quiz = dataSnapshot.getValue(Quiz.class);
-                                gotoResultActivity(quiz);
-                                progressDialog.dismiss();
+                                if(mAuth.getCurrentUser().getUid().equals(quiz.getUserId())) {
+
+                                    Toast.makeText(activity, "You can't participate on your own created quiz. So you can't show the result.", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                } else {
+                                    gotoResultActivity(quiz);
+                                    progressDialog.dismiss();
+                                }
                             } else {
                                 Toast.makeText(activity, "Quiz not found.", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
@@ -191,8 +210,14 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.getValue() != null) {
                                 Quiz quiz = dataSnapshot.getValue(Quiz.class);
-                                gotoInstructionActivity(quiz);
-                                progressDialog.dismiss();
+                                if(mAuth.getCurrentUser().getUid().equals(quiz.getUserId())) {
+                                    Toast.makeText(activity, "You can't participate on your own created quiz.", Toast.LENGTH_SHORT).show();
+                                    progressDialog.dismiss();
+                                } else {
+                                    gotoInstructionActivity(quiz);
+                                    progressDialog.dismiss();
+                                }
+
                             } else {
                                 Toast.makeText(activity, "Quiz not found.", Toast.LENGTH_SHORT).show();
                                 progressDialog.dismiss();
@@ -201,7 +226,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
 
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d(TAG, databaseError.toException().toString());
+                            //Log.d(TAG, databaseError.toException().toString());
                             progressDialog.dismiss();
                         }
                     });
@@ -223,7 +248,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
         participantViewModel.isParticipate(mAuth.getCurrentUser().getUid(), quizId).observe(this, new Observer<DataSnapshot>() {
             @Override
             public void onChanged(DataSnapshot dataSnapshot) {
-                Log.d(TAG, "inside erooor");
+                //Log.d(TAG, "inside erooor");
                 if (dataSnapshot.getValue() != null) {
 
                     //gotoResultActivity(quizId);
@@ -276,7 +301,7 @@ public class BookmarkFragment extends Fragment implements BookmarkAdapter.OnClic
 
     public void gotoResultActivity(Quiz quiz) {
         Intent resultIntent = new Intent(activity, ResultActivity.class);
-        resultIntent.putExtra("quiz", quiz);
+        resultIntent.putExtra("quizId", quiz.getId());
         startActivity(resultIntent);
     }
 

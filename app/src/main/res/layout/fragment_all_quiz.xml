@@ -6,43 +6,35 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.AllQuizFragment">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/a_quiz_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/white"
-        android:layout_marginTop="5dp"
-        app:queryHint="@string/use_quiz_name">
-    </androidx.appcompat.widget.SearchView>
 
-
-    <RelativeLayout
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/a_quiz_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="10dp"
-        android:layout_below="@id/a_quiz_search_view">
+        android:layout_below="@id/adView"
+        tools:listitem="@layout/layout_quiz_item"
+        android:layout_marginBottom="3dp">
+    </androidx.recyclerview.widget.RecyclerView>
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/a_quiz_rv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginTop="5dp"
-            tools:listitem="@layout/layout_quiz_item"
-            android:layout_marginBottom="10dp">
-        </androidx.recyclerview.widget.RecyclerView>
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        android:layout_gravity="center_horizontal"
+        ads:adUnitId="@string/admob_banner_id">
+    </com.google.android.gms.ads.AdView>
 
-        <TextView
-            android:id="@+id/a_no_quiz_Tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/no_quiz_data_found"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:visibility="gone"
-            tools:visibility="visible"/>
-
-
-    </RelativeLayout>
+    <TextView
+        android:id="@+id/a_no_quiz_Tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="@string/no_quiz_data_found"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </RelativeLayout>

@@ -3,6 +3,7 @@ package com.kcirqueit.playandearn.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -27,6 +28,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,15 +56,12 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextListener, QuizAdapter.OnItemClickListener{
+public class AllQuizFragment extends Fragment implements QuizAdapter.OnItemClickListener{
 
     private static final String TAG = "AllQuizFragment";
 
     @BindView(R.id.a_quiz_rv)
     RecyclerView mQuizRv;
-
-    @BindView(R.id.a_quiz_search_view)
-    SearchView mQuizSearchView;
 
     @BindView(R.id.a_no_quiz_Tv)
     TextView mNoQuizMsg;
@@ -79,10 +80,13 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
 
     private FirebaseAuth mAuth;
 
+    private AdView mAdView;
+
 
 
     public AllQuizFragment() {
         // Required empty public constructor
+
     }
 
 
@@ -91,6 +95,11 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
                              Bundle savedInstanceState) {
 
         activity = (FragmentContainerActivity) getActivity();
+
+        MobileAds.initialize(activity,
+                getString(R.string.admob_app_id));
+
+        setHasOptionsMenu(true);
 
         mAuth = FirebaseAuth.getInstance();
         mParticipantRef = FirebaseDatabase.getInstance().getReference().child("Participants");
@@ -110,8 +119,9 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
 
         mQuizRv.setLayoutManager(new LinearLayoutManager(activity));
 
-
-        mQuizSearchView.setOnQueryTextListener(this);
+        mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
         return view;
     }
@@ -134,7 +144,6 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
                         if (quiz.getStatus().equals("published")) {
                             quizzes.add(quiz);
                         }
-
                     }
 
                     if (quizzes.size() > 0) {
@@ -142,12 +151,12 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
                         mQuizAdapter = new QuizAdapter(activity, quizzes);
                         mQuizAdapter.setItemClickListener(AllQuizFragment.this);
                         mQuizRv.setAdapter(mQuizAdapter);
-
                     } else {
                         mNoQuizMsg.setVisibility(View.VISIBLE);
                     }
                     progressDialog.dismiss();
                 } else {
+                    mNoQuizMsg.setVisibility(View.VISIBLE);
                     progressDialog.dismiss();
                 }
             }
@@ -160,16 +169,6 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
 
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        mQuizAdapter.getFilter().filter(newText);
-        return true;
-    }
 
 
     @Override
@@ -232,7 +231,7 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
 
                                     Intent resultIntent = new Intent(activity, ResultActivity.class);
                                     Log.d("quiz name:", quiz.getQuizName());
-                                    resultIntent.putExtra("quiz", quiz);
+                                    resultIntent.putExtra("quizId", quiz.getId());
                                     startActivity(resultIntent);
 
                                 } else {
@@ -247,7 +246,6 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
                                 Log.d("Quiz adapter:", databaseError.toException().toString());
                             }
                         });
-
             }
 
 
@@ -283,25 +281,54 @@ public class AllQuizFragment extends Fragment implements SearchView.OnQueryTextL
 
     @Override
     public void getCreatorName(String userId, TextView creatorTv) {
-        mUserRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.getValue() != null) {
-                    String userName = dataSnapshot.child("userName").getValue().toString();
-                    //Log.d("user name:", userName);
-                    creatorTv.setText("Creator: "+userName);
-                }
-            }
+        if (mAuth.getUid().equals(userId)) {
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d(TAG, databaseError.toException().toString());
-            }
-        });
+            creatorTv.setText("Creator: You");
+
+        } else{
+            mUserRef.child(userId).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.getValue() != null) {
+                        String userName = dataSnapshot.child("userName").getValue().toString();
+                        //Log.d("user name:", userName);
+                        creatorTv.setText("Creator: "+userName);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    Log.d(TAG, databaseError.toException().toString());
+                }
+            });
+        }
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+
+        menu.clear();
+        inflater.inflate(R.menu.myquiz_menu, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.search_menu);
+
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if (newText != null){
+                    mQuizAdapter.getFilter().filter(newText);
+                }
+
+                return true;
+            }
+        });
 
         super.onCreateOptionsMenu(menu, inflater);
     }

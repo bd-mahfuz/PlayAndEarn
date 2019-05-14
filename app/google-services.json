@@ -23,8 +23,12 @@
           }
         },
         {
-          "client_id": "642051270139-v0a68ghm0dh62q7o0q4rnve79hull3qm.apps.googleusercontent.com",
-          "client_type": 3
+          "client_id": "642051270139-sevcjb6sjffk0g4rm777kloqruebcigj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kcirqueit.playandearn",
+            "certificate_hash": "df42f25d0b527fb8c26047c0f630ec554373dc47"
+          }
         }
       ],
       "api_key": [
@@ -33,20 +37,13 @@
         }
       ],
       "services": {
-        "analytics_service": {
-          "status": 1
-        },
         "appinvite_service": {
-          "status": 2,
           "other_platform_oauth_client": [
             {
               "client_id": "642051270139-v0a68ghm0dh62q7o0q4rnve79hull3qm.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
-        },
-        "ads_service": {
-          "status": 2
         }
       },
       "admob_app_id": "ca-app-pub-6743725542896610~1007422547"

@@ -21,6 +21,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -65,6 +68,8 @@ public class MyResultFragment extends Fragment {
 
     private List<Quiz> quizList = new ArrayList<>();
 
+    private AdView mAdView;
+
     public MyResultFragment() {
         // Required empty public constructor
     }
@@ -73,8 +78,10 @@ public class MyResultFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         activity = (FragmentContainerActivity) getActivity();
+
+        MobileAds.initialize(activity,
+                getString(R.string.admob_app_id));
 
         participantViewModel = ViewModelProviders.of(this).get(ParticipantViewModel.class);
         mRootRef = FirebaseDatabase.getInstance().getReference();
@@ -95,6 +102,11 @@ public class MyResultFragment extends Fragment {
         adapter = new MyResultAdapter(activity, quizList);
         mMyResultRv.setAdapter(adapter);
 
+        mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+
         return view;
     }
 
@@ -113,7 +125,6 @@ public class MyResultFragment extends Fragment {
                     if (dataSnapshot.getValue() != null) {
 
                         for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
-
                             String quizId = dataSnapshot1.getKey();
                             if (dataSnapshot1.child(mCurrentUserId).getValue() != null) {
                                 mLinearlayout.setVisibility(View.GONE);
@@ -125,7 +136,6 @@ public class MyResultFragment extends Fragment {
                                             Quiz quiz = dataSnapshot.getValue(Quiz.class);
                                             quizList.add(quiz);
                                             adapter.notifyDataSetChanged();
-
                                         }
                                     }
 
@@ -135,7 +145,7 @@ public class MyResultFragment extends Fragment {
                                     }
                                 });
 
-
+                                mLinearlayout.setVisibility(View.GONE);
                                 progressDialog.dismiss();
                             } else {
                                 mLinearlayout.setVisibility(View.VISIBLE);
@@ -143,6 +153,7 @@ public class MyResultFragment extends Fragment {
 
 
                         }
+                        mLinearlayout.setVisibility(View.GONE);
                         progressDialog.dismiss();
 
                     } else {

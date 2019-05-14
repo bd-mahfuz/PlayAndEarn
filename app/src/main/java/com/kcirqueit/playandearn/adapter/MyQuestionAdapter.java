@@ -9,6 +9,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.RadioButton;
@@ -22,6 +24,7 @@ import com.kcirqueit.playandearn.activity.AddQuestionActivity;
 import com.kcirqueit.playandearn.model.Question;
 import com.kcirqueit.playandearn.viewModel.QuestionViewModel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -30,16 +33,20 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.ViweHolder> {
+public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.ViweHolder> implements Filterable {
 
     private Context context;
     private List<Question> questionList;
+    private List<Question> filteredQuestionList;
     private QuestionViewModel questionViewModel;
+    private String isPublished;
 
-    public MyQuestionAdapter(Context context, List<Question> questionList, QuestionViewModel questionViewModel) {
+    public MyQuestionAdapter(Context context, List<Question> questionList, QuestionViewModel questionViewModel, String isPublished) {
         this.context = context;
         this.questionList = questionList;
+        this.filteredQuestionList = questionList;
         this.questionViewModel = questionViewModel;
+        this.isPublished = isPublished;
     }
 
     @NonNull
@@ -55,7 +62,7 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
     @Override
     public void onBindViewHolder(@NonNull ViweHolder holder, int position) {
 
-        Question question = questionList.get(position);
+        Question question = filteredQuestionList.get(position);
 
         holder.questionTv.setText((position+1)+". "+question.getQuestionTitle());
 
@@ -70,6 +77,7 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
             holder.option2.setEnabled(false);
             holder.option3.setEnabled(false);
             holder.option4.setEnabled(false);
+            holder.option1.setEnabled(true);
 
         } else if(question.getCorrectAns() == 1) {
             holder.option2.setChecked(true);
@@ -80,6 +88,7 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
             holder.option4.setText(question.getOptions().get(3));
 
             holder.option1.setEnabled(false);
+            holder.option2.setEnabled(true);
             holder.option3.setEnabled(false);
             holder.option4.setEnabled(false);
 
@@ -94,6 +103,7 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
             holder.option1.setEnabled(false);
             holder.option2.setEnabled(false);
             holder.option4.setEnabled(false);
+            holder.option3.setEnabled(true);
 
         } else if(question.getCorrectAns() == 3) {
             holder.option4.setChecked(true);
@@ -106,6 +116,7 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
             holder.option1.setEnabled(false);
             holder.option2.setEnabled(false);
             holder.option3.setEnabled(false);
+            holder.option4.setEnabled(true);
         }
 
 
@@ -113,7 +124,47 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return questionList.size();
+        return filteredQuestionList.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+
+                String query = constraint.toString();
+
+                if (query.isEmpty()) {
+                    filteredQuestionList = questionList;
+                } else {
+
+                    List<Question> tempList = new ArrayList<>();
+
+                    for (Question question : questionList) {
+                        if (question.getQuestionTitle().toLowerCase().contains(query.toLowerCase())) {
+                            tempList.add(question);
+                        }
+                    }
+
+                    filteredQuestionList = tempList;
+
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredQuestionList;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                filteredQuestionList = (List<Question>) results.values;
+                notifyDataSetChanged();
+
+            }
+        };
     }
 
     public class ViweHolder extends RecyclerView.ViewHolder {
@@ -157,13 +208,26 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
 
                     if (item.getTitle().equals("Edit")) {
 
-                        Intent addQuestionIntent = new Intent(context, AddQuestionActivity.class);
-                        addQuestionIntent.putExtra("requestForEdit", "true");
-                        addQuestionIntent.putExtra("question", questionList.get(getAdapterPosition()));
-                        context.startActivity(addQuestionIntent);
+                        if (isPublished.equals("published")) {
+
+                            Toast.makeText(context, "Quiz is already published, You can't edit or delete questions of the quiz.", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            Intent addQuestionIntent = new Intent(context, AddQuestionActivity.class);
+                            addQuestionIntent.putExtra("requestForEdit", "true");
+                            addQuestionIntent.putExtra("question", filteredQuestionList.get(getAdapterPosition()));
+                            context.startActivity(addQuestionIntent);
+                        }
 
                     } else if (item.getTitle().equals("Delete")) {
-                        showAlertDialog(); // and perform delete operation
+
+                        if (isPublished.equals("published")) {
+
+                            Toast.makeText(context, "Quiz is already published, You can't edit or delete questios of the quiz.", Toast.LENGTH_SHORT).show();
+
+                        } else {
+                            showAlertDialog(); // and perform delete operation
+                        }
                     }
                     return true;
                 }
@@ -201,7 +265,7 @@ public class MyQuestionAdapter extends RecyclerView.Adapter<MyQuestionAdapter.Vi
         }
 
         public void deleteQuestion() {
-            questionViewModel.deleteQeustion(questionList.get(getAdapterPosition()))
+            questionViewModel.deleteQeustion(filteredQuestionList.get(getAdapterPosition()))
                     .addOnCompleteListener(new OnCompleteListener() {
                         @Override
                         public void onComplete(@NonNull Task task) {

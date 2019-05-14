@@ -86,7 +86,7 @@ public class MyResultAdapter extends RecyclerView.Adapter<MyResultAdapter.ViewHo
                 @Override
                 public void onClick(View v) {
                     Intent resultIntent = new Intent(context, ResultActivity.class);
-                    resultIntent.putExtra("quiz", quizList.get(getAdapterPosition()));
+                    resultIntent.putExtra("quizId", quizList.get(getAdapterPosition()).getId());
                     context.startActivity(resultIntent);
                 }
             });

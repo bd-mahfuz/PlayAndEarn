@@ -2,6 +2,7 @@ package com.kcirqueit.playandearn.adapter;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,9 @@ import android.widget.TextView;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
 import com.kcirqueit.playandearn.R;
+import com.kcirqueit.playandearn.activity.ResultActivity;
 import com.kcirqueit.playandearn.model.Participant;
+import com.kcirqueit.playandearn.model.Quiz;
 
 import java.util.List;
 
@@ -77,6 +80,9 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
         @BindView(R.id.a_quiz_name_tv)
         TextView quizNameTv;
 
+        @BindView(R.id.details_tv)
+        TextView detailsTv;
+
         @BindView(R.id.a_score_tv)
         CircleProgressBar mCustomProgressBar;
 
@@ -85,6 +91,13 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
             super(itemView);
 
             ButterKnife.bind(this, itemView);
+
+            detailsTv.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    gotoResultActivity(participantList.get(getAdapterPosition()).getQuizId());
+                }
+            });
         }
 
         private void simulateProgress(int max) {
@@ -105,6 +118,12 @@ public class AchievementAdapter extends RecyclerView.Adapter<AchievementAdapter.
             int pa = (score * 100) / totalMarks;
             return pa;
 
+        }
+
+        public void gotoResultActivity(String quizId) {
+            Intent resultIntent = new Intent(context, ResultActivity.class);
+            resultIntent.putExtra("quizId", quizId);
+            context.startActivity(resultIntent);
         }
     }
 }

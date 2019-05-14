@@ -11,6 +11,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
@@ -28,11 +30,15 @@ import com.kcirqueit.playandearn.activity.CreateQuizActivity;
 import com.kcirqueit.playandearn.activity.MyQuestionActivity;
 import com.kcirqueit.playandearn.activity.ViewParticipantActivity;
 import com.kcirqueit.playandearn.model.Quiz;
+import com.kcirqueit.playandearn.services.FirebaseApi;
+import com.kcirqueit.playandearn.services.FirebaseClient;
 import com.kcirqueit.playandearn.utility.DateUtility;
 import com.kcirqueit.playandearn.utility.InternetConnection;
 import com.kcirqueit.playandearn.viewModel.QuestionViewModel;
 import com.kcirqueit.playandearn.viewModel.QuizViewModel;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -41,19 +47,28 @@ import androidx.recyclerview.widget.RecyclerView;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
-public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder> {
+public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder> implements Filterable {
 
     private Context context;
     private List<Quiz> quizzes;
-    private QuizViewModel quizViewModel;
-    private QuestionViewModel questionViewModel;
+    private List<Quiz> filteredQuizzes;
 
-    public MyQuizAdapter(Context context, List<Quiz> quizzes, QuizViewModel quizViewModel, QuestionViewModel questionViewModel) {
+    private OnCreateQuizListener createQuizListener;
+
+    public MyQuizAdapter(Context context, List<Quiz> quizzes) {
         this.context = context;
         this.quizzes = quizzes;
-        this.quizViewModel = quizViewModel;
-        this.questionViewModel = questionViewModel;
+        this.filteredQuizzes = quizzes;
+    }
+
+    public void setCreateQuizListener(OnCreateQuizListener createQuizListener) {
+        this.createQuizListener = createQuizListener;
     }
 
     @NonNull
@@ -69,10 +84,13 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
     @Override
     public void onBindViewHolder(@NonNull MyQuizAdapter.ViewHolder holder, int position) {
 
-        Quiz quiz = quizzes.get(position);
+        Quiz quiz = filteredQuizzes.get(position);
 
         holder.quizName.setText(quiz.getQuizName());
         holder.totalMarksTv.setText("Marks : "+quiz.getTotalMarks()+"");
+
+        //Log.d("onBindViewHolder: ", quiz.getTimeLimit());
+
         holder.totalTimeTv.setText(DateUtility.milliToHour(Long.parseLong(quiz.getTimeLimit())) +" hours");
         holder.quizStatusTv.setText("Status : "+quiz.getStatus());
 
@@ -80,7 +98,41 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
 
     @Override
     public int getItemCount() {
-        return quizzes.size();
+        return filteredQuizzes.size();
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence constraint) {
+                String query = constraint.toString();
+                List<Quiz> tempList = new ArrayList<>();
+                if (query.isEmpty()) {
+                    filteredQuizzes = quizzes;
+                } else {
+                    for (Quiz quiz : quizzes) {
+                        if (quiz.getQuizName().toLowerCase().contains(query.toLowerCase())) {
+                            tempList.add(quiz);
+                        }
+                    }
+                    filteredQuizzes = tempList;
+                }
+
+                FilterResults results = new FilterResults();
+                results.values = filteredQuizzes;
+
+                return results;
+            }
+
+            @Override
+            protected void publishResults(CharSequence constraint, FilterResults results) {
+
+                filteredQuizzes = (List<Quiz>) results.values;
+                notifyDataSetChanged();
+
+            }
+        };
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -101,7 +153,6 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
         @BindView(R.id.popup_iv)
         ImageView popupIv;
 
-        private DatabaseReference mQuestionRef = FirebaseDatabase.getInstance().getReference().child("Questions");
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -112,8 +163,9 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
                 @Override
                 public void onClick(View v) {
                     Intent questionIntent = new Intent(context, MyQuestionActivity.class);
-                    questionIntent.putExtra("quizId", quizzes.get(getAdapterPosition()).getId());
-                    questionIntent.putExtra("totalQuestion", quizzes.get(getAdapterPosition()).getTotalQuestion()+"");
+                    questionIntent.putExtra("quizId", filteredQuizzes.get(getAdapterPosition()).getId());
+                    questionIntent.putExtra("isPublished", filteredQuizzes.get(getAdapterPosition()).getStatus()+"");
+                    questionIntent.putExtra("totalQuestion", filteredQuizzes.get(getAdapterPosition()).getTotalQuestion()+"");
                     context.startActivity(questionIntent);
                 }
             });
@@ -124,225 +176,20 @@ public class MyQuizAdapter extends RecyclerView.Adapter<MyQuizAdapter.ViewHolder
 
         @OnClick(R.id.popup_iv)
         public void onPopupClick() {
-            PopupMenu popupMenu = new PopupMenu(context, popupIv);
-            Menu menu = popupMenu.getMenu();
-            menu.add("Edit");
-            menu.add("Delete");
-            menu.add("View Participants");
-            menu.add("Publish Quiz");
-            popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
 
-                    if (item.getTitle().equals("Edit")) {
-
-                        if (!isPublished()) {
-                            if (InternetConnection.checkConnection(context)) {
-                                Intent createQuizIntent = new Intent(context, CreateQuizActivity.class);
-                                createQuizIntent.putExtra("requestForEdit", "true");
-                                createQuizIntent.putExtra("quiz", quizzes.get(getAdapterPosition()));
-                                context.startActivity(createQuizIntent);
-                            } else {
-                                InternetConnection.showNoInternetDialog(context);
-                            }
-
-
-                        } else {
-                            Toast.makeText(context, "Quiz is already Publish. You Can't Edit the Quiz", Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else if (item.getTitle().equals("Delete")) {
-
-                        if (!isPublished()) {
-                            String quizId = quizzes.get(getAdapterPosition()).getId();
-                            if (InternetConnection.checkConnection(context)) {
-                                showDeleteDialog(quizId);
-                            } else {
-                                InternetConnection.showNoInternetDialog(context);
-                            }
-
-
-                        }  else {
-                            Toast.makeText(context, "Quiz is already Publish. You Can't Delete the Quiz", Toast.LENGTH_SHORT).show();
-                        }
-
-                    } else if (item.getTitle().equals("View Participants")){
-
-                        // goto ViewParticipantActivity
-                        gotoParticipanteActivity(quizzes.get(getAdapterPosition()));
-
-                    } else if (item.getTitle().equals("Publish Quiz")) {
-                        if (isPublished()) {
-                            Toast.makeText(context, "Quiz is Already Published.", Toast.LENGTH_SHORT).show();
-                        } else {
-
-                            if (InternetConnection.checkConnection(context)) {
-                                showPublishedDialog();
-                            } else {
-                                InternetConnection.showNoInternetDialog(context);
-                            }
-                        }
-                    }
-
-                    return true;
-                }
-            });
-
-            popupMenu.show();
-        }
-
-        public boolean isPublished() {
-            if (quizzes.get(getAdapterPosition()).getStatus().equals("un-published")) {
-                return false;
+            if (createQuizListener != null) {
+                createQuizListener.onPopupClick(quizzes.get(getAdapterPosition()), popupIv);
             }
-            return true;
-        }
-
-        public void showDeleteDialog(String quizId) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Warning");
-            builder.setIcon(R.drawable.ic_warning_red);
-            builder.setMessage("All questions will also be delete with this quiz.");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-
-                    deleteQuiz(quizId);
-                    dialog.dismiss();
-
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
 
         }
 
-        public void showPublishedDialog() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Warning");
-            builder.setIcon(R.drawable.ic_warning_red);
-            builder.setMessage("Please review your quiz and question information. After publish you can't edit or delete them.");
-            builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Quiz quiz = quizzes.get(getAdapterPosition());
-                    mQuestionRef.child(quiz.getId()).addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            if (dataSnapshot.getValue()!= null) {
-                                int count = 0;
-                                for (DataSnapshot questionSnapshot: dataSnapshot.getChildren()) {
-                                    count ++;
-                                }
-
-                                if (count == quiz.getTotalQuestion()) {
-                                    publishQuiz();
-                                } else {
-                                    Toast.makeText(context, "You added "+count+" question. You have to add total "+quiz.getTotalQuestion()+" Question.",
-                                            Toast.LENGTH_SHORT).show();
-                                }
-                            } else {
-                                Toast.makeText(context, "You did't create any question for this quiz. Plz add all question first.", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            Log.d("MyQuiz Adapter", databaseError.toException().toString());
-                        }
-                    });
-
-                    dialog.dismiss();
-
-                }
-            });
-            builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-
-            AlertDialog alertDialog = builder.create();
-            alertDialog.show();
-        }
-
-        public void deleteQuiz(String quizId) {
-            // delete the quiz
-            quizViewModel.deleteQuiz(quizzes.get(getAdapterPosition()))
-                    .addOnCompleteListener(new OnCompleteListener() {
-                        @Override
-                        public void onComplete(@NonNull Task task) {
-                            if (task.isSuccessful()) {
-
-                                //checking in question ref the quiz is exist or not
-                                mQuestionRef.child(quizId).addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if (dataSnapshot.getValue() != null) {
-                                            // delete all question related to that quiz
-                                            questionViewModel.deleteAllQuestion(quizId)
-                                                    .addOnCompleteListener(new OnCompleteListener() {
-                                                        @Override
-                                                        public void onComplete(@NonNull Task task) {
-                                                            if(task.isSuccessful()) {
-                                                                Toast.makeText(context, "Successfully deleted", Toast.LENGTH_SHORT).show();
-                                                            } else {
-                                                                Toast.makeText(context, "Question is Not deleted", Toast.LENGTH_SHORT).show();
-                                                            }
-                                                        }
-                                                    });
-                                        } else {
-                                            Toast.makeText(context, "Successfully deleted", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        Log.d("My Quiz Adapter", databaseError.toException().toString());
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(context, "Quiz is not deleted", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    });
-
-        }
-
-        public void publishQuiz() {
-            Quiz quiz = quizzes.get(getAdapterPosition());
-            quiz.setStatus("published");
-            quizViewModel.updateQuiz(quiz).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-
-                        Toast.makeText(context, "Successfully published.", Toast.LENGTH_SHORT).show();
-
-                    } else {
-                        Toast.makeText(context, "Quiz is not published. Something wrong.", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
-        }
+    }
 
 
-        public void gotoParticipanteActivity(Quiz quiz) {
 
-            Intent participantIntent = new Intent(context, ViewParticipantActivity.class);
-            participantIntent.putExtra("quiz", quiz);
-            context.startActivity(participantIntent);
+    public interface OnCreateQuizListener {
 
-        }
-
+       void onPopupClick(Quiz quiz, ImageView popUpIv);
 
     }
 }

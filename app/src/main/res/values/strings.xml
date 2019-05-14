@@ -1,9 +1,17 @@
 <resources>
-    <string name="app_name">Play And Earn</string>
-    <string name="admob_app_id">ca-app-pub-6743725542896610~1007422547</string>
+    <string name="app_name">Quiz App</string>
+    <string name="admob_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="admob_banner_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="admob_interstitial_id">ca-app-pub-3940256099942544/1033173712</string>
     <string name="code_sent_info">We sent you a code. It will be detected automatically but if it is not detected you can put it bellow manually as well.</string>
     <string name="submit">Submit</string>
     <string name="verification_coce">Enter verification code</string>
+
+
+    <string name="drawer_open">Open</string>
+    <string name="drawer_close">Close</string>
+    <string name="msg_token_fmt">token</string>
+
 
     <string name="user_name_text">User name</string>
     <string name="dummy_user">Tarek Hasan</string>
@@ -45,7 +53,7 @@
     <string name="publish_quiz">Publish Quiz</string>
     <string name="create_quiz">Create Quiz</string>
     <string name="bookmark_quiz">BookMark</string>
-    <string name="results">Results</string>
+    <string name="results">My Results</string>
     <string name="all_quizzes">All Quizzes</string>
     <string name="no_quiz_data_found">No Quiz Data Found</string>
     <string name="quiz_name">Quiz Name</string>
@@ -83,4 +91,15 @@
     <string name="no_user_has_participated_yet">No user has participated yet</string>
     <string name="use_quiz_name">Use quiz name</string>
     <string name="or_your_score_is_not_too_good">or your score is not too good to show here.</string>
+    <string name="i_accept_the_terms_and_conditions">I accept the terms and conditions.</string>
+    <string name="not_registered_yet">Not Registered yet?</string>
+    <string name="password">Password</string>
+    <string name="sign_out">Logout</string>
+    <string name="more_apps">More Apps</string>
+    <string name="rate_it">Rate it</string>
+    <string name="share">Share</string>
+    <string name="total_no_of_questions">Total No. of Questions</string>
+    <string name="home">Home</string>
+    <string name="add_options">Add Options</string>
+    <string name="details">Details</string>
 </resources>

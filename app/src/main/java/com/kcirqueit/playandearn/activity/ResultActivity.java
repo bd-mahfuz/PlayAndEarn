@@ -13,8 +13,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.dinuscxj.progressbar.CircleProgressBar;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,30 +59,43 @@ public class ResultActivity extends AppCompatActivity {
 
 
 
-    Quiz quiz;
+    private String quizId;
+
+    private AdView mAdView;
 
     private DatabaseReference mRootRef;
     private DatabaseReference mParticipantRef;
     private FirebaseAuth mAuth;
+    
+    
+    private InterstitialAd mInterstitialAd;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result);
 
         ButterKnife.bind(this);
+        MobileAds.initialize(this,
+                getString(R.string.admob_app_id));
+        
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.admob_interstitial_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         mAuth = FirebaseAuth.getInstance();
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mParticipantRef = mRootRef.child("Participants");
 
-        quiz = (Quiz) getIntent().getSerializableExtra("quiz");
+        quizId = (String) getIntent().getSerializableExtra("quizId");
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle(quiz.getQuizName());
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
-
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
 
     }
 
@@ -87,17 +105,20 @@ public class ResultActivity extends AppCompatActivity {
         progressDialog.setMessage("Loading...");
         progressDialog.show();
 
-        mParticipantRef.child(quiz.getId()).child(mAuth.getCurrentUser().getUid())
+        mParticipantRef.child(quizId).child(mAuth.getCurrentUser().getUid())
                 .addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.getValue() != null) {
                     Participant participant = dataSnapshot.getValue(Participant.class);
 
-                    mQuizNameTv.setText(quiz.getQuizName());
-                    mTotalMarksEt.setText(quiz.getTotalMarks()+"");
-                    mTtimeLimitEt.setText(DateUtility.milliToHour(Long.parseLong(quiz.getTimeLimit()))+" hours");
-                    mTotalQuestionTv.setText(quiz.getTotalQuestion()+"");
+                    //set quiz name in the title bar
+                    getSupportActionBar().setTitle(participant.getQuizName());
+
+                    mQuizNameTv.setText(participant.getQuizName());
+                    mTotalMarksEt.setText(participant.getTotalMarks()+"");
+                    mTtimeLimitEt.setText(DateUtility.milliToHour(Long.parseLong(participant.getTimeLimit()))+" hours");
+                    mTotalQuestionTv.setText(participant.getTotalQuestion()+"");
 
                     mAansweredTv.setText(participant.getTotalAnswered()+"");
                     progressDialog.dismiss();
@@ -109,7 +130,7 @@ public class ResultActivity extends AppCompatActivity {
                         }
                     });
 
-                    simulateProgress(participant.getScore(), quiz.getTotalMarks());
+                    simulateProgress(participant.getScore(), participant.getTotalMarks());
 
 
                 } else {
@@ -130,7 +151,7 @@ public class ResultActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        if (quiz != null) {
+        if (quizId != null) {
             setData();
         }
     }
@@ -138,14 +159,15 @@ public class ResultActivity extends AppCompatActivity {
     private void simulateProgress(int max, int totalMarks) {
         ValueAnimator animator = ValueAnimator.ofInt(max);
         animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 int progress = (int) animation.getAnimatedValue();
                 mCustomProgressBar.setProgress(progress);
                 mCustomProgressBar.setMax(totalMarks);
             }
-        });
 
+        });
         animator.setDuration(1000);
         animator.start();
     }
@@ -160,6 +182,11 @@ public class ResultActivity extends AppCompatActivity {
 
         if (item.getItemId() == android.R.id.home)
         {
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show(); 
+            } else {
+                Log.d("ResultActivity", "Failed to load interstitial ads.");
+            }
             finish();
         }
         return true;

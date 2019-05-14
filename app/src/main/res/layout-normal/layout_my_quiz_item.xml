@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="?attr/selectableItemBackground"
+        android:focusable="true">
+
+        <LinearLayout
+            android:id="@+id/mobile_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentTop="true"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/quiz_name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/quiz_name"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                />
+
+
+
+            <TextView
+                android:id="@+id/total_time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/time"
+                android:textColor="@android:color/white"
+                android:textSize="12sp"
+                android:drawablePadding="5dp"
+                android:background="@drawable/border_orange_back"
+                android:paddingRight="15dp"
+                android:paddingLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp"
+                />
+
+        </LinearLayout>
+
+
+        <ImageView
+            android:id="@+id/popup_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_more_vert_black_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:padding="5dp"/>
+
+        <TextView
+            android:id="@+id/total_marks_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/total_marks"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:drawableLeft="@drawable/ic_check_green"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical"
+            android:layout_below="@+id/mobile_layout"
+
+            />
+
+        <TextView
+            android:id="@+id/status_quiz_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="published"
+            android:textColor="@android:color/black"
+            android:textSize="12sp"
+            android:drawableLeft="@drawable/ic_check_green"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical"
+            android:layout_below="@+id/total_marks_tv"/>
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

@@ -30,7 +30,10 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -63,6 +66,9 @@ public class UserInfoActivity extends AppCompatActivity {
     @BindView(R.id.u_dob_et)
     EditText mDobEt;
 
+    @BindView(R.id.u_pass_et)
+    EditText mPassEt;
+
     @BindView(R.id.gender_rg)
     RadioGroup mGenderRg;
 
@@ -85,8 +91,8 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private Calendar mCalendar;
 
-    private String mPhoneNumber;
-    private String mCountryName;
+   /* private String mPhoneNumber;
+    private String mCountryName;*/
 
     private UserViewModel mUserViewModel;
 
@@ -96,7 +102,6 @@ public class UserInfoActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
-    private MySharedPreference sharedPreference;
 
     private Uri mResultUri;
     private byte[] thumbByte;
@@ -108,16 +113,15 @@ public class UserInfoActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        sharedPreference = MySharedPreference.getInstance(this);
 
-        mPhoneNumber = getIntent().getStringExtra("phoneNumber");
+        /*mPhoneNumber = getIntent().getStringExtra("phoneNumber");
         mCountryName = getIntent().getStringExtra("country");
         if ((mPhoneNumber == null || mPhoneNumber.isEmpty())|| (mCountryName == null || mCountryName.isEmpty())) {
 
             mPhoneNumber = sharedPreference.getData("phoneNumber");
             mCountryName = sharedPreference.getData("country");
 
-        }
+        }*/
 
         mUserViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
@@ -129,7 +133,7 @@ public class UserInfoActivity extends AppCompatActivity {
 
         // set up toolbar
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Add User Info");
+        getSupportActionBar().setTitle("Sign Up");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // radio button check change listener
@@ -177,7 +181,7 @@ public class UserInfoActivity extends AppCompatActivity {
     }
 
     private void updateLabel() {
-        String myFormat = "MM/dd/yy"; //In which you need put here
+        String myFormat = "MM/dd/yy";
         SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
         mDobEt.setText(sdf.format(mCalendar.getTime()));
     }
@@ -263,6 +267,7 @@ public class UserInfoActivity extends AppCompatActivity {
         String userName = mUserNameEt.getText().toString();
         String email = mEmailEt.getText().toString();
         String dob = mDobEt.getText().toString();
+        String pass = mPassEt.getText().toString();
 
         // checking for validation
         if (userName.isEmpty()) {
@@ -277,86 +282,109 @@ public class UserInfoActivity extends AppCompatActivity {
         } else if (dob.isEmpty()) {
             mDobEt.setError("Email is not valid");
             return;
+        } else if (pass.isEmpty() || pass.length() < 6) {
+            mPassEt.setError("Password should not be empty or less than 6 char.");
+            return;
         }
 
         // save data to the firebase
-        final User user = new User(mAuth.getCurrentUser().getUid(), userName, mGender, email, mPhoneNumber, dob, "");
-        user.setCountry(mCountryName);
+        final User user = new User("", userName, mGender, email,
+                "", dob, "");
+        user.setCountry("");
+        user.setPassword(pass);
         mProgressDialog.setMessage("Please wait until we create your profile.");
         mProgressDialog.show();
 
+        mAuth.createUserWithEmailAndPassword(email, pass)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            // Sign in success, update UI with the signed-in user's information
+                            Log.d(TAG, "createUserWithEmail:success");
 
-        //for main image
-        final StorageReference filePathRef = rootStorageRef.child("user_profile_images")
-                .child(mAuth.getCurrentUser().getUid() + ".jpg");
-        //for thumb image
-        final StorageReference thumbFilePathRef = rootStorageRef.child("user_profile_images")
-                .child("thumb_images").child(mAuth.getCurrentUser().getUid() + ".jpg");
+                            user.setId(mAuth.getCurrentUser().getUid());
 
-        if (mResultUri == null) {
-            //mResultUri = Uri.parse("android.resource://com.kcirqueit.spinandearn/drawable/user_avater");
-            // if photo is not upload set as default for user avater
-            user.setPhotoUrl("default");
-            mUserViewModel.addUser(user).addOnCompleteListener(new OnCompleteListener() {
-                @Override
-                public void onComplete(@NonNull Task task) {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
-                        sharedPreference.saveData("profileCreated", "true");
-                        // go to the main activity
-                        startActivity(new Intent(UserInfoActivity.this, FragmentContainerActivity.class));
-                        finish();
+                            //for main image
+                            final StorageReference filePathRef = rootStorageRef.child("user_profile_images")
+                                    .child(mAuth.getCurrentUser().getUid() + ".jpg");
+                            //for thumb image
+                            final StorageReference thumbFilePathRef = rootStorageRef.child("user_profile_images")
+                                    .child("thumb_images").child(mAuth.getCurrentUser().getUid() + ".jpg");
 
-                        mProgressDialog.dismiss();
-                    }
-                }
-            });
+                            if (mResultUri == null) {
+                                //mResultUri = Uri.parse("android.resource://com.kcirqueit.spinandearn/drawable/user_avater");
+                                // if photo is not upload set as default for user avater
+                                user.setPhotoUrl("default");
+                                mUserViewModel.addUser(user).addOnCompleteListener(new OnCompleteListener() {
+                                    @Override
+                                    public void onComplete(@NonNull Task task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
+                                            //sharedPreference.saveData("profileCreated", "true");
+                                            // go to the main activity
+                                            startActivity(new Intent(UserInfoActivity.this, FragmentContainerActivity.class));
+                                            finish();
 
-        } else {
+                                            mProgressDialog.dismiss();
+                                        }
+                                    }
+                                });
 
-            filePathRef.putFile(mResultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                    if (task.isSuccessful()) {
+                            } else {
 
-                        try {
-                            //getting the download uri
-                            //final String userImageUrl = task.getResult().getDownloadUrl().toString();
-                            //final String userImageUrl = filePathRef.getDownloadUrl().;
+                                filePathRef.putFile(mResultUri).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                                        if (task.isSuccessful()) {
 
-
-                            UploadTask uploadTask = thumbFilePathRef.putBytes(thumbByte);
-                            uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
-                                @Override
-                                public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                                    if (task.isSuccessful()) {
+                                            try {
+                                                //getting the download uri
+                                                //final String userImageUrl = task.getResult().getDownloadUrl().toString();
+                                                //final String userImageUrl = filePathRef.getDownloadUrl().;
 
 
-                                        filePathRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                            @Override
-                                            public void onSuccess(Uri uri) {
-                                                Log.d("User image url:", uri.toString());
-                                                user.setPhotoUrl(uri.toString());
-                                                mUserViewModel.addUser(user).addOnCompleteListener(new OnCompleteListener() {
+                                                UploadTask uploadTask = thumbFilePathRef.putBytes(thumbByte);
+                                                uploadTask.addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
                                                     @Override
-                                                    public void onComplete(@NonNull Task task) {
+                                                    public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                                                         if (task.isSuccessful()) {
-                                                            Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
-                                                            sharedPreference.saveData("profileCreated", "true");
-                                                            // go to the main activity
-                                                            startActivity(new Intent(UserInfoActivity.this, FragmentContainerActivity.class));
-                                                            finish();
-
-                                                            mProgressDialog.dismiss();
-                                                        }
-                                                    }
-                                                });
-
-                                            }
-                                        });
 
 
-                                        //download the thumbimage
+                                                            filePathRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                                                @Override
+                                                                public void onSuccess(Uri uri) {
+                                                                    Log.d("User image url:", uri.toString());
+                                                                    user.setPhotoUrl(uri.toString());
+                                                                    mUserViewModel.addUser(user).addOnCompleteListener(new OnCompleteListener() {
+                                                                        @Override
+                                                                        public void onComplete(@NonNull Task task) {
+                                                                            if (task.isSuccessful()) {
+
+                                                                                // updating user
+                                                                                mAuth.getCurrentUser().updateProfile(updateProfile(userName)).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                                                                    @Override
+                                                                                    public void onComplete(@NonNull Task<Void> task) {
+
+                                                                                    }
+                                                                                });
+
+                                                                                Toast.makeText(UserInfoActivity.this, "Your Profile is created!", Toast.LENGTH_SHORT).show();
+                                                                                //sharedPreference.saveData("profileCreated", "true");
+                                                                                // go to the main activity
+                                                                                startActivity(new Intent(UserInfoActivity.this, FragmentContainerActivity.class));
+                                                                                finish();
+
+                                                                                mProgressDialog.dismiss();
+                                                                            }
+                                                                        }
+                                                                    });
+
+                                                                }
+                                                            });
+
+
+                                                            //download the thumbimage
                                            /* String thumImageUrl = task.getResult().getDownloadUrl().toString();
 
                                             Map map = new HashMap();
@@ -374,31 +402,54 @@ public class UserInfoActivity extends AppCompatActivity {
                                                 }
                                             });*/
 
-                                    } else {
-                                        mProgressDialog.dismiss();
-                                        Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer.", Toast.LENGTH_SHORT).show();
+                                                        } else {
+                                                            mProgressDialog.dismiss();
+                                                            Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer.", Toast.LENGTH_SHORT).show();
 
+                                                        }
+                                                    }
+                                                });
+
+
+                                            } catch (Exception e) {
+                                                e.printStackTrace();
+                                                Toast.makeText(UserInfoActivity.this, "No Image Found to Upload!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        } else {
+                                            mProgressDialog.dismiss();
+                                            Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer.", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
+                                });
 
 
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(UserInfoActivity.this, "No Image Found to Upload!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            // ----------------- finish the registration part -----------------
+
+                        } else {
+                            // If sign in fails, display a message to the user.
+                            Log.w(TAG, "createUserWithEmail:failure", task.getException());
+                            Toast.makeText(UserInfoActivity.this, "Authentication failed. Please check your email id.",
+                                    Toast.LENGTH_SHORT).show();
+                            mProgressDialog.dismiss();
                         }
-                    } else {
-                        mProgressDialog.dismiss();
-                        Toast.makeText(UserInfoActivity.this, "Image is not uploaded, Please contact with developer.", Toast.LENGTH_SHORT).show();
 
+                        // ...
                     }
-                }
-            });
+                });
 
 
-        }
 
 
+
+    }
+
+    public UserProfileChangeRequest updateProfile(String name) {
+
+        return new UserProfileChangeRequest.Builder()
+                .setDisplayName("Jane Q. User")
+                .build();
     }
 
 

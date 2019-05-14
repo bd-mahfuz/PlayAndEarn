@@ -38,7 +38,7 @@ public class DashBoardActivity extends AppCompatActivity implements RewardedVide
         ButterKnife.bind(this);
 
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Dashboard");
+        //getSupportActionBar().setTitle("Dashboard");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 

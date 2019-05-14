@@ -1,6 +1,7 @@
 package com.kcirqueit.playandearn.activity;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -14,6 +15,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -43,6 +45,9 @@ public class MyQuestionActivity extends AppCompatActivity {
 
     private String quizId;
     private String totalQuestion;
+    private String isPublished;
+
+    MyQuestionAdapter adapter;
 
     private QuestionViewModel questionViewModel;
     private FirebaseAuth mAuth;
@@ -57,8 +62,9 @@ public class MyQuestionActivity extends AppCompatActivity {
 
         quizId = getIntent().getStringExtra("quizId");
         totalQuestion = getIntent().getStringExtra("totalQuestion");
+        isPublished = getIntent().getStringExtra("isPublished");
 
-        Log.d("totalQuestion", totalQuestion);
+        //Log.d("totalQuestion", totalQuestion);
 
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
@@ -77,19 +83,27 @@ public class MyQuestionActivity extends AppCompatActivity {
 
     @OnClick(R.id.questionFAB)
     public void onClickAddQuestion() {
+
         if (questions.size() == Integer.parseInt(totalQuestion)) {
-            Toast.makeText(this, "You can't add more than ", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "You can't add more than "+ totalQuestion+ " questions", Toast.LENGTH_SHORT).show();
         } else {
             Intent addQuestionIntent = new Intent(this, AddQuestionActivity.class);
             addQuestionIntent.putExtra("quizId", quizId);
+            addQuestionIntent.putExtra("totalQuestion", totalQuestion);
+            addQuestionIntent.putExtra("isPublished", isPublished);
             startActivity(addQuestionIntent);
+            //finish();
         }
+
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
+
+
+
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Loading..");
         progressDialog.show();
@@ -106,8 +120,9 @@ public class MyQuestionActivity extends AppCompatActivity {
                         questions.add(question);
                     }
 
-                    MyQuestionAdapter adapter = new MyQuestionAdapter(MyQuestionActivity.this,
-                            questions, questionViewModel);
+                    adapter = new MyQuestionAdapter(MyQuestionActivity.this,
+                            questions, questionViewModel, isPublished);
+
                     mQuestionRv.setAdapter(adapter);
 
                 } else {
@@ -119,6 +134,8 @@ public class MyQuestionActivity extends AppCompatActivity {
 
     }
 
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
@@ -127,5 +144,34 @@ public class MyQuestionActivity extends AppCompatActivity {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        getMenuInflater().inflate(R.menu.myquiz_menu, menu);
+
+        MenuItem menuItem = menu.findItem(R.id.search_menu);
+
+        SearchView searchView = (SearchView) menuItem.getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                if (newText != null){
+                    adapter.getFilter().filter(newText);
+                }
+
+                return true;
+            }
+        });
+
+
+        return super.onCreateOptionsMenu(menu);
     }
 }

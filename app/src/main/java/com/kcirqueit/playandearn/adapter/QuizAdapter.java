@@ -8,6 +8,9 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.model.Quiz;
 import com.kcirqueit.playandearn.utility.DateUtility;
@@ -143,6 +146,11 @@ public class QuizAdapter extends RecyclerView.Adapter<QuizAdapter.ViewHolder> im
         public void onBookMarkedClick() {
             Quiz quiz = quizzes.get(getAdapterPosition());
             if (itemClickListener != null) {
+                YoYo.with(Techniques.Pulse)
+                        .duration(700)
+                        .repeat(0)
+                        .playOn(bookmarkIv);
+
                 itemClickListener.onBookmarkClick(quiz);
             }
 

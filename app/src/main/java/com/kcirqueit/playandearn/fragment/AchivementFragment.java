@@ -20,6 +20,9 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -61,6 +64,8 @@ public class AchivementFragment extends Fragment {
     private ParticipantViewModel participantViewModel;
     AchievementAdapter adapter;
 
+    private AdView mAdView;
+
     public AchivementFragment() {
         // Required empty public constructor
     }
@@ -71,6 +76,9 @@ public class AchivementFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         activity = (FragmentContainerActivity) getActivity();
+
+        MobileAds.initialize(activity,
+                getString(R.string.admob_app_id));
 
         mRootRef = FirebaseDatabase.getInstance().getReference();
         mParticipantRef = mRootRef.child("Participants");
@@ -88,6 +96,11 @@ public class AchivementFragment extends Fragment {
         mAchieveRv.setLayoutManager(new LinearLayoutManager(activity));
         adapter = new AchievementAdapter(participantList, activity);
         mAchieveRv.setAdapter(adapter);
+
+        mAdView = view.findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+        mAdView.setVisibility(View.VISIBLE);
 
         return view;
     }

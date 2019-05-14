@@ -2,6 +2,7 @@ package com.kcirqueit.playandearn.activity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 import butterknife.BindView;
@@ -21,6 +22,9 @@ import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.model.Quiz;
+import com.kcirqueit.playandearn.utility.DateUtility;
 import com.kcirqueit.playandearn.viewModel.QuizViewModel;
 
 import java.util.ArrayList;
@@ -57,6 +62,11 @@ public class CreateQuizActivity extends AppCompatActivity {
     @BindView(R.id.total_question_et)
     EditText mTotalQuestionEt;
 
+    @BindView(R.id.create_quiz_bt)
+    AppCompatButton mCreateQuizBt;
+
+
+
     private DatabaseReference mRootRef;
     private DatabaseReference mCategoryRef;
     private FirebaseAuth mAuth;
@@ -72,14 +82,27 @@ public class CreateQuizActivity extends AppCompatActivity {
     String timeLimit;
 
 
+    private InterstitialAd mInterstitialAd;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_quiz);
 
+        MobileAds.initialize(this,
+                getString(R.string.admob_app_id));
+
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId(getString(R.string.admob_interstitial_id));
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
         // getting data from intent
         requestForEdit = getIntent().getStringExtra("requestForEdit");
         quiz = (Quiz) getIntent().getSerializableExtra("quiz");
+
+        if(quiz != null) {
+            timeLimit = quiz.getTimeLimit();
+        }
 
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
@@ -101,8 +124,6 @@ public class CreateQuizActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle(toolbarTitle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
     }
 
 
@@ -200,6 +221,13 @@ public class CreateQuizActivity extends AppCompatActivity {
 
                         Toast.makeText(CreateQuizActivity.this, "Quiz is successfully created!",
                                 Toast.LENGTH_SHORT).show();
+
+                        //showing interstitial ad
+                        if (mInterstitialAd.isLoaded()) {
+                            mInterstitialAd.show();
+                        } else {
+                            Log.d("TAG", "The interstitial wasn't loaded yet.");
+                        }
                         mProgressDialog.dismiss();
                         finish();
 
@@ -218,6 +246,7 @@ public class CreateQuizActivity extends AppCompatActivity {
             quiz.setTotalQuestion(totalQuestion);
             quiz.setTimeLimit(this.timeLimit);
 
+
             mProgressDialog.show();
             quizViewModel.updateQuiz(quiz).addOnCompleteListener(new OnCompleteListener() {
                 @Override
@@ -225,6 +254,13 @@ public class CreateQuizActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Toast.makeText(CreateQuizActivity.this, "Quiz updated Successfully.",
                                 Toast.LENGTH_SHORT).show();
+
+                        //showing interstitial ad
+                        if (mInterstitialAd.isLoaded()) {
+                            mInterstitialAd.show();
+                        } else {
+                            Log.d("TAG", "The interstitial wasn't loaded yet.");
+                        }
                         mProgressDialog.dismiss();
                         finish();
                     }else {
@@ -242,11 +278,13 @@ public class CreateQuizActivity extends AppCompatActivity {
     private void setDataForEdit() {
 
         mQuizNameEt.setText(quiz.getQuizName());
-        mTimeLimitEt.setText(quiz.getTimeLimit());
+        mTimeLimitEt.setText(DateUtility.milliToHour(Long.parseLong(quiz.getTimeLimit())));
         mTotalMarksEt.setText(quiz.getTotalMarks()+"");
         mTotalQuestionEt.setText(quiz.getTotalQuestion()+"");
 
         mCategorySpinner.setSelection(getSpinnerIndex());
+
+        mCreateQuizBt.setText("Update");
 
     }
 
@@ -255,7 +293,7 @@ public class CreateQuizActivity extends AppCompatActivity {
         for (int i = 0; i < mCategorySpinner.getCount(); i++) {
             if (mCategorySpinner.getItemAtPosition(i).equals(quiz.getCat_id())){
                 index = i;
-                Log.d("index:", index+"");
+                //Log.d("index:", index+"");
                 break;
             }
         }
@@ -272,6 +310,13 @@ public class CreateQuizActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         if (item.getItemId() == android.R.id.home) {
+
+            if (mInterstitialAd.isLoaded()) {
+                mInterstitialAd.show();
+            }else {
+                Log.d("TAG", "The interstitial wasn't loaded yet.");
+            }
+
             finish();
         }
 

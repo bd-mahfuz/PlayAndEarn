@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="8dp"
+    android:layout_marginLeft="8dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground">
+
+        <LinearLayout
+        android:id="@+id/mobile_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:padding="5dp">
+
+            <TextView
+                android:id="@+id/quiz_name_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/quiz_name"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                />
+
+
+
+            <TextView
+                android:id="@+id/total_time_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                tools:text="@string/time"
+                android:textColor="@android:color/white"
+                android:drawablePadding="5dp"
+                android:background="@drawable/border_orange_back"
+                android:paddingRight="15dp"
+                android:paddingLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                />
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/creator_tv"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="@string/creator_name"
+            android:textColor="@android:color/black"
+            android:drawableLeft="@drawable/ic_check_green"
+            android:drawablePadding="5dp"
+            android:layout_marginTop="5dp"
+            android:gravity="center_vertical"
+            android:layout_toLeftOf="@id/start_quiz_iv"
+            android:layout_below="@+id/mobile_layout"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            />
+        <TextView
+            android:id="@+id/total_marks_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="@string/total_marks"
+            android:textColor="@android:color/black"
+            android:drawableLeft="@drawable/ic_check_green"
+            android:drawablePadding="5dp"
+            android:gravity="center_vertical"
+            android:layout_below="@+id/creator_tv"
+            android:layout_marginLeft="10dp"
+            android:textSize="16sp"
+            />
+
+        <ImageView
+            android:id="@+id/start_quiz_iv"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/ic_bookmark_border_orange"
+            android:paddingRight="5dp"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackground"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_below="@+id/creator_tv"/>
+
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

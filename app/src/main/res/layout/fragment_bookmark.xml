@@ -9,9 +9,20 @@
         android:id="@+id/qui_bookmark-rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_below="@id/adView"
         tools:listitem="@layout/layout_bookmark_item">
 
     </androidx.recyclerview.widget.RecyclerView>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        android:layout_centerHorizontal="true"
+        ads:adUnitId="@string/admob_banner_id">
+    </com.google.android.gms.ads.AdView>
 
     <TextView
         android:id="@+id/no_bookmark_found_tv"

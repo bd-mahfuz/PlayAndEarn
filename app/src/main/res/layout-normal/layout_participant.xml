@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentStart="true"
+            android:layout_toLeftOf="@+id/p_percent_tv"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true">
+
+            <TextView
+                android:id="@+id/p_participant_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/dummy_user"
+                android:textSize="16sp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="10dp"
+                android:textColor="@android:color/black"/>
+
+            <TextView
+                android:id="@+id/p_score_tv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/quiz_name"
+                android:textSize="12sp"
+                android:drawableLeft="@drawable/ic_check_green"
+                android:gravity="center_vertical"
+                android:drawablePadding="5dp"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="2dp"
+                android:layout_marginLeft="10dp"
+                android:layout_below="@+id/p_participant_name"
+                />
+
+        </LinearLayout>
+
+        <com.dinuscxj.progressbar.CircleProgressBar
+            android:id="@+id/p_percent_tv"
+            android:layout_marginTop="5dp"
+            app:style="solid_line"
+            app:progress_stroke_width="5dp"
+            app:progress_background_color="@color/gray_transparent"
+            app:progress_start_color="@color/colorAccent"
+            app:progress_end_color="@color/red_transparent"
+            android:layout_alignParentEnd="true"
+            app:progress_text_color="@android:color/black"
+            app:progress_text_size="18sp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_below="@id/a_quiz_name_tv"
+            android:layout_gravity="center_horizontal"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"/>
+
+    </RelativeLayout>
+
+
+
+
+</androidx.cardview.widget.CardView>

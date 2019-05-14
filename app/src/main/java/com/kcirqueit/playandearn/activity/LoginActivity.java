@@ -1,5 +1,6 @@
 package com.kcirqueit.playandearn.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatCheckBox;
@@ -10,11 +11,18 @@ import butterknife.OnClick;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.kcirqueit.playandearn.R;
 import com.kcirqueit.playandearn.sharedPreference.MySharedPreference;
 import com.kcirqueit.playandearn.utility.InternetConnection;
@@ -44,8 +52,28 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
+/*
+        FirebaseInstanceId.getInstance().getInstanceId()
+                .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "getInstanceId failed", task.getException());
+                            return;
+                        }
 
+                        // Get new Instance ID token
+                        String token = task.getResult().getToken();
+
+                        // Log and toast
+                        String msg = getString(R.string.msg_token_fmt, token);
+                        Log.d(TAG, msg);
+                        Toast.makeText(LoginActivity.this, msg, Toast.LENGTH_SHORT).show();
+                    }
+                });*/
+
+
+        mAuth = FirebaseAuth.getInstance();
         sharedPreference = MySharedPreference.getInstance(this);
 
         if (InternetConnection.checkConnection(this)) {
@@ -109,6 +137,7 @@ public class LoginActivity extends AppCompatActivity {
         verifyIntent.putExtra("phoneNumber", phoneNumber);
         verifyIntent.putExtra("country", countryName);
         startActivity(verifyIntent);
+
         finish();
 
     }
